@@ -1,0 +1,360 @@
+{
+    "provinces": {
+        "status": 200,
+        "body": {
+            "success": true,
+            "count": 2,
+            "data": [
+                {
+                    "code": 1,
+                    "name": "Thành phố Hà Nội",
+                    "short_name": "Hà Nội",
+                    "division_type": "thành phố trung ương",
+                    "codename": "ha_noi",
+                    "phone_code": 24
+                },
+                {
+                    "code": 91,
+                    "name": "Tỉnh An Giang",
+                    "short_name": "An Giang",
+                    "division_type": "tỉnh",
+                    "codename": "an_giang",
+                    "phone_code": null
+                }
+            ]
+        }
+    },
+    "province_search": {
+        "status": 200,
+        "body": {
+            "success": true,
+            "count": 1,
+            "data": [
+                {
+                    "code": 91,
+                    "name": "Tỉnh An Giang",
+                    "short_name": "An Giang",
+                    "division_type": "tỉnh",
+                    "codename": "an_giang",
+                    "phone_code": null
+                }
+            ]
+        }
+    },
+    "province_no_accent": {
+        "status": 200,
+        "body": {
+            "success": true,
+            "count": 0,
+            "data": []
+        }
+    },
+    "wards": {
+        "status": 200,
+        "body": {
+            "success": true,
+            "province": {
+                "code": 1,
+                "name": "Thành phố Hà Nội",
+                "short_name": "Hà Nội",
+                "division_type": "thành phố trung ương",
+                "codename": "ha_noi",
+                "phone_code": 24
+            },
+            "count": 2,
+            "data": [
+                {
+                    "code": 1,
+                    "name": "Phường A",
+                    "division_type": "phường",
+                    "codename": "phuong_a",
+                    "province_code": 1
+                },
+                {
+                    "code": 2,
+                    "name": "Xã B",
+                    "division_type": "xã",
+                    "codename": "xa_b",
+                    "province_code": 1
+                }
+            ]
+        }
+    },
+    "ward_search": {
+        "status": 200,
+        "body": {
+            "success": true,
+            "province": {
+                "code": 1,
+                "name": "Thành phố Hà Nội",
+                "short_name": "Hà Nội",
+                "division_type": "thành phố trung ương",
+                "codename": "ha_noi",
+                "phone_code": 24
+            },
+            "count": 1,
+            "data": [
+                {
+                    "code": 2,
+                    "name": "Xã B",
+                    "division_type": "xã",
+                    "codename": "xa_b",
+                    "province_code": 1
+                }
+            ]
+        }
+    },
+    "province": {
+        "status": 200,
+        "body": {
+            "success": true,
+            "data": {
+                "code": 1,
+                "name": "Thành phố Hà Nội",
+                "short_name": "Hà Nội",
+                "division_type": "thành phố trung ương",
+                "codename": "ha_noi",
+                "phone_code": 24,
+                "wards": [
+                    {
+                        "code": 2,
+                        "name": "Xã B",
+                        "division_type": "xã",
+                        "codename": "xa_b",
+                        "province_code": 1
+                    },
+                    {
+                        "code": 1,
+                        "name": "Phường A",
+                        "division_type": "phường",
+                        "codename": "phuong_a",
+                        "province_code": 1
+                    }
+                ],
+                "ward_count": 2
+            }
+        }
+    },
+    "health": {
+        "status": 200,
+        "body": {
+            "success": true,
+            "service": "VN Address API 2025+",
+            "version": "1.0.0",
+            "administrative_model": "2-level"
+        }
+    },
+    "missing_parameter": {
+        "status": 400,
+        "body": {
+            "code": "rest_missing_callback_param",
+            "message": "Missing parameter(s): province_code",
+            "data": {
+                "status": 400,
+                "params": [
+                    "province_code"
+                ]
+            }
+        }
+    },
+    "invalid_parameter": {
+        "status": 400,
+        "body": {
+            "code": "rest_invalid_param",
+            "message": "Invalid parameter(s): province_code",
+            "data": {
+                "status": 400,
+                "params": {
+                    "province_code": "Invalid parameter."
+                },
+                "details": []
+            }
+        }
+    },
+    "negative_parameter": {
+        "status": 200,
+        "body": {
+            "success": true,
+            "province": {
+                "code": 1,
+                "name": "Thành phố Hà Nội",
+                "short_name": "Hà Nội",
+                "division_type": "thành phố trung ương",
+                "codename": "ha_noi",
+                "phone_code": 24
+            },
+            "count": 2,
+            "data": [
+                {
+                    "code": 1,
+                    "name": "Phường A",
+                    "division_type": "phường",
+                    "codename": "phuong_a",
+                    "province_code": 1
+                },
+                {
+                    "code": 2,
+                    "name": "Xã B",
+                    "division_type": "xã",
+                    "codename": "xa_b",
+                    "province_code": 1
+                }
+            ]
+        }
+    },
+    "empty_search": {
+        "status": 200,
+        "body": {
+            "success": true,
+            "province": {
+                "code": 1,
+                "name": "Thành phố Hà Nội",
+                "short_name": "Hà Nội",
+                "division_type": "thành phố trung ương",
+                "codename": "ha_noi",
+                "phone_code": 24
+            },
+            "count": 0,
+            "data": []
+        }
+    },
+    "cached_http_calls": [
+        {
+            "url": "https://provinces.open-api.vn/api/v2/p/",
+            "timeout": 15,
+            "redirection": 3,
+            "headers": {
+                "Accept": "application/json",
+                "User-Agent": "WordPress/VN-Address-API-2025"
+            }
+        },
+        {
+            "url": "https://provinces.open-api.vn/api/v2/p/1?depth=2",
+            "timeout": 15,
+            "redirection": 3,
+            "headers": {
+                "Accept": "application/json",
+                "User-Agent": "WordPress/VN-Address-API-2025"
+            }
+        }
+    ],
+    "cache_payloads": [
+        [
+            {
+                "name": "Tỉnh An Giang",
+                "code": 91,
+                "division_type": "ignored",
+                "codename": "an_giang"
+            },
+            {
+                "name": "Thành phố Hà Nội",
+                "code": 1,
+                "division_type": "ignored",
+                "codename": "ha_noi",
+                "phone_code": 24
+            }
+        ],
+        {
+            "name": "Thành phố Hà Nội",
+            "code": 1,
+            "division_type": "ignored",
+            "codename": "ha_noi",
+            "phone_code": 24,
+            "wards": [
+                {
+                    "code": 2,
+                    "name": "Xã B",
+                    "division_type": "xã",
+                    "codename": "xa_b",
+                    "province_code": 1
+                },
+                {
+                    "code": 1,
+                    "name": "Phường A",
+                    "division_type": "phường",
+                    "codename": "phuong_a",
+                    "province_code": 1
+                }
+            ]
+        }
+    ],
+    "error_transport": {
+        "status": 502,
+        "body": {
+            "code": "vn_address_upstream_error",
+            "message": "Không thể kết nối nguồn dữ liệu địa giới hành chính.",
+            "data": {
+                "status": 502,
+                "detail": "Fixture transport failure"
+            }
+        }
+    },
+    "error_http": {
+        "status": 502,
+        "body": {
+            "code": "vn_address_upstream_http_error",
+            "message": "Nguồn dữ liệu trả về lỗi HTTP.",
+            "data": {
+                "status": 502,
+                "upstream_status": 404
+            }
+        }
+    },
+    "error_json": {
+        "status": 502,
+        "body": {
+            "code": "vn_address_invalid_json",
+            "message": "Dữ liệu JSON từ nguồn không hợp lệ.",
+            "data": {
+                "status": 502
+            }
+        }
+    },
+    "error_missing": {
+        "status": 404,
+        "body": {
+            "code": "vn_address_not_found",
+            "message": "Không tìm thấy tỉnh/thành phố.",
+            "data": {
+                "status": 404
+            }
+        }
+    },
+    "routes": {
+        "/provinces": {
+            "methods": {
+                "GET": true
+            },
+            "permission": true,
+            "args": [
+                "search"
+            ]
+        },
+        "/wards": {
+            "methods": {
+                "GET": true
+            },
+            "permission": true,
+            "args": [
+                "province_code",
+                "search"
+            ]
+        },
+        "/province/(?P<code>\\d+)": {
+            "methods": {
+                "GET": true
+            },
+            "permission": true,
+            "args": [
+                "code"
+            ]
+        },
+        "/health": {
+            "methods": {
+                "GET": true
+            },
+            "permission": true,
+            "args": []
+        }
+    }
+}
