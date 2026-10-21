@@ -44,7 +44,7 @@ Không cần Composer hoặc bước cài dependency. Autoloader nội bộ ch�
 
 ## Development Status
 
-Phase 2 — Refactor Core Architecture, tiếp tục development của version 2.0.0. Class legacy `VN_Address_API_2025`, constants và toàn bộ public methods vẫn tồn tại dưới dạng facade trong `includes/legacy-api.php`; mọi xử lý delegate sang core mới.
+Phase 3 — Provider Reliability & Cache Resilience, tiếp tục development của version 2.0.0. Class legacy `VN_Address_API_2025`, constants và toàn bộ public methods vẫn tồn tại dưới dạng facade trong `includes/legacy-api.php`; mọi xử lý delegate sang core mới.
 
 Bootstrap: entrypoint → requirements → autoloader → `Plugin::instance()->boot()` → legacy registration → `vnap_loaded`. Textdomain và version check chạy trên `init`. Hook `vnap_loaded` không có arguments, fire đúng một lần sau khi class/API registration callback đã sẵn sàng; routes thực tế được đăng ký tại `rest_api_init`. Integration muốn nghe hook phải đăng ký trước khi plugin boot; plugin tải sau có thể dùng `did_action('vnap_loaded')`.
 
@@ -58,6 +58,16 @@ REST v1 Controller → AddressService → ProvinceOpenApiProvider → Transients
 
 Core trả `array` hoặc `WP_Error` có mã `vnap_`; REST boundary map về schema/lỗi cũ. Validator giữ default của field optional và cách ép mã v1, đồng thời chặn payload sai cấu trúc/kiểu để tránh warning và TypeError. Normalizer giữ `province_code: 0` khi ward thiếu parent, không tự suy ra mã khác.
 
-`Plugin::instance()->address_service()` và `rest_controller()` là API nội bộ tạm thời, chưa có cam kết ổn định như developer facade chính thức. Xem [architecture](docs/architecture.md) và [Phase 2 validation](docs/phase2-validation.md).
+`Plugin::instance()->address_service()` và `rest_controller()` là API nội bộ tạm thời, chưa có cam kết ổn định như developer facade chính thức. Xem [architecture](docs/architecture.md).
+
+## Provider resilience
+
+Raw payload từ remote và cache được validate trước khi dùng. Chỉ remote data hợp lệ mới được ghi vào active cache và last-known-good (LKG). Các active keys cũ và TTL mặc định 24 giờ giữ nguyên; LKG mặc định 7 ngày, được dùng khi refresh lỗi hoặc đang bị lock/backoff. Không thêm field báo stale vào REST v1.
+
+Refresh có lease lock trong bảng options sẵn có, negative cache ngắn cho detail HTTP 404 và failure marker cho lỗi tạm thời. Retry tối đa một lần, chỉ khi lỗi transient đầu tiên kết thúc dưới 0,5 giây và chưa có LKG. Không retry đồng bộ 429 hoặc timeout kéo dài; không sleep trong request.
+
+Đây là fallback bằng cache, **không phải offline database**. Transients có thể bị evict sớm; nếu không còn cache/LKG và nguồn ngoài lỗi thì API trả lỗi legacy. Không có cron refresh, sync engine hoặc admin settings mới.
+
+TTL filters, diagnostics và giới hạn: [cache-reliability.md](docs/cache-reliability.md). Kết quả: [Phase 3 validation](docs/phase3-validation.md).
 
 Future Migration Recommendation: chỉ cân nhắc đổi folder/main filename khi có kế hoạch migration đã kiểm chứng bảo toàn activation identity. Phase 1 không rename.

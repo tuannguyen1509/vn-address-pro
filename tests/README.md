@@ -9,6 +9,7 @@ wp plugin activate vn-address-pro
 wp eval-file wp-content/plugins/vn-address-pro/tests/Contract/RestV1ContractTest.php
 wp eval-file wp-content/plugins/vn-address-pro/tests/FoundationTest.php
 wp eval-file wp-content/plugins/vn-address-pro/tests/Unit/CoreTest.php
+wp eval-file wp-content/plugins/vn-address-pro/tests/Unit/ReliabilityTest.php
 wp plugin deactivate vn-address-pro
 wp plugin activate vn-address-pro
 wp eval-file wp-content/plugins/vn-address-pro/tests/FoundationTest.php
@@ -26,7 +27,19 @@ For live smoke tests, call all four routes over HTTP on the test site. Enable `W
 
 `Unit/CoreTest.php` runs 42 named checks for Normalizer, Search, Validator, AddressService, ProvinceOpenApiProvider, AddressCache, HttpClient, v1 error mapping and direct legacy calls. It uses mocked provider/cache/HTTP implementations; a `pre_http_request` filter intercepts every outbound request, so the test suite does not need internet. Cache adapter checks use the real WordPress Transients API. PHP warnings/notices during test execution become test failures. The temporary `vnap_unit_cache` key is also restored after the suite.
 
-The existing contract runner and its frozen fixture have not been regenerated or edited. Run contract and core checks on PHP 8.1 and 8.3, with WordPress 6.3+ and no WooCommerce required.
+The frozen fixture has not been regenerated or edited. Phase 3 updates the contract runner's state isolation only, clearing active/LKG/negative/failure/lock state before no-fallback error cases. Expected public schemas, messages/statuses and baseline comparisons are unchanged. Run contract and core checks on PHP 8.1 and 8.3, with WordPress 6.3+ and no WooCommerce required.
+
+## Phase 3 reliability checks
+
+`Unit/ReliabilityTest.php` adds 60 named tests; total core/reliability is **42 existing + 60 new = 102**, plus 18 frozen REST comparisons and the foundation/requirements suites. HTTP is mocked globally; time advances in memory, not by sleeping. Real database-backed leases are tested for exclusion, expiry/reclaim and ownership-safe release.
+
+`Support/CacheState.php` snapshots and clears only explicitly named provider resources used by a test (default list and province 1). It covers active/LKG/negative/failure transients and the matching option lease, restoring saved values afterwards. It does not scan/delete arbitrary transients. Run only on a disposable site; transient TTL restoration with external object cache is approximate, and tests deliberately exercise lock/version/cache state.
+
+Existing tests updated: CoreTest no longer requires only one active-cache write, acceptance of empty raw datasets, lack of failure state or immediate error on corrupt active data. It now asserts valid active/LKG outcomes, rejection/refresh, bounded failure markers and preserved no-fallback public error mapping. Public schema/signature/search/sort/health expectations were not weakened.
+
+Reliability cases cover empty/duplicate/missing/invalid required fields, province and ward-parent mismatch, valid empty wards, cache/LKG writes and write failures, timeout/DNS/500/503/429/invalid JSON/schema outages, stale-first backoff, negative 404 expiry, retry/no-retry, TTL/filter/Retry-After bounds, lock release/crash recovery and REST fallback schema equality. Error-contract cases clear all fallback state; separate stale scenarios intentionally expect HTTP 200 with identical response shape.
+
+Tests can capture `vnap_diagnostic` without producing PHP log spam via `vnap_log_to_error_log`. Logs from other deliberate failure checks are prefixed application diagnostics; inspect separately from PHP Warning/Notice/Deprecated/Fatal.
 
 Optional live check (network/provider availability can cause failure; excluded from the core suite):
 

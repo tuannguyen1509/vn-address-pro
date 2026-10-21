@@ -52,12 +52,11 @@ $vnap_dispatch = static function ( $route, $params = array() ) {
     return array( 'status' => $response->get_status(), 'body' => $response->get_data() );
 };
 $vnap_keys = array( 'vn_address_provinces_v2', 'vn_address_province_1_depth2' );
-$vnap_saved = array();
-foreach ( $vnap_keys as $key ) {
-    $vnap_saved[ $key ] = get_transient( $key );
-    delete_transient( $key );
-}
+require_once dirname( __DIR__ ) . '/Support/CacheState.php';
+$vnap_state = new \Tunlamweb\VNAddressPro\Tests\Support\CacheState();
+$vnap_state->clear();
 $vnap_snapshots = array();
+$vnap_failure = null;
 try {
     $vnap_snapshots['provinces'] = $vnap_dispatch( '/provinces' );
     $vnap_snapshots['province_search'] = $vnap_dispatch( '/provinces', array( 'search' => 'an giang' ) );
@@ -73,9 +72,7 @@ try {
     $vnap_snapshots['cached_http_calls'] = $vnap_calls;
     $vnap_snapshots['cache_payloads'] = array_map( 'get_transient', $vnap_keys );
     foreach ( array( 'transport', 'http', 'json', 'missing' ) as $vnap_mode ) {
-        foreach ( $vnap_keys as $key ) {
-            delete_transient( $key );
-        }
+        $vnap_state->clear();
         $vnap_snapshots[ 'error_' . $vnap_mode ] = $vnap_dispatch( '/province/1' );
     }
     $routes = rest_get_server()->get_routes();
@@ -93,20 +90,20 @@ try {
         $expected = json_decode( file_get_contents( __DIR__ . '/fixtures/rest-v1.json' ), true, 512, JSON_THROW_ON_ERROR );
         foreach ( $expected as $name => $value ) {
             if ( ! array_key_exists( $name, $vnap_snapshots ) || $value !== $vnap_snapshots[ $name ] ) {
-                WP_CLI::error( 'REST v1 regression: ' . $name );
+                throw new RuntimeException( 'REST v1 regression: ' . $name );
             }
         }
         if ( count( $expected ) !== count( $vnap_snapshots ) ) {
-            WP_CLI::error( 'Unexpected contract snapshot count.' );
+            throw new RuntimeException( 'Unexpected contract snapshot count.' );
         }
         WP_CLI::success( count( $expected ) . ' REST v1 baseline comparisons passed.' );
     }
+} catch ( Throwable $vnap_error ) {
+    $vnap_failure = $vnap_error->getMessage();
 } finally {
     remove_filter( 'pre_http_request', $vnap_http, 10 );
-    foreach ( $vnap_saved as $key => $value ) {
-        delete_transient( $key );
-        if ( $value !== false ) {
-            set_transient( $key, $value, DAY_IN_SECONDS );
-        }
-    }
+    $vnap_state->restore();
+}
+if ( $vnap_failure !== null ) {
+    WP_CLI::error( $vnap_failure );
 }

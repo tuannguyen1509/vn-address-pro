@@ -22,22 +22,28 @@ class HttpClient {
             return new \WP_Error(
                 'vnap_transport_error',
                 __( 'The address data request failed.', 'vn-address-pro' ),
-                array( 'detail' => $response->get_error_message() )
+                array( 'detail' => $response->get_error_message(), 'classification' => 'transport' )
             );
         }
 
         $status = wp_remote_retrieve_response_code( $response );
         if ( $status < 200 || $status >= 300 ) {
+            $classification = $status === 404 ? 'http_404' : ( $status === 429 ? 'http_429' : ( $status >= 500 ? 'http_5xx' : 'http_error' ) );
+            $data = array( 'upstream_status' => $status, 'classification' => $classification );
+            $retry_after = wp_remote_retrieve_header( $response, 'retry-after' );
+            if ( $status === 429 && is_string( $retry_after ) ) {
+                $data['retry_after'] = substr( trim( $retry_after ), 0, 128 );
+            }
             return new \WP_Error(
                 'vnap_remote_http_error',
                 __( 'The address provider returned an HTTP error.', 'vn-address-pro' ),
-                array( 'upstream_status' => $status )
+                $data
             );
         }
 
         $data = json_decode( wp_remote_retrieve_body( $response ), true );
         if ( ! is_array( $data ) ) {
-            return new \WP_Error( 'vnap_invalid_payload', __( 'The address provider returned an invalid payload.', 'vn-address-pro' ) );
+            return new \WP_Error( 'vnap_invalid_payload', __( 'The address provider returned an invalid payload.', 'vn-address-pro' ), array( 'classification' => json_last_error() === JSON_ERROR_NONE ? 'invalid_root' : 'invalid_json' ) );
         }
         return $data;
     }

@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased — Phase 3 (development of 2.0.0)
+
+- Validate provider and cached payloads before use; validate remote data before active/LKG writes.
+- Require nonempty, unique province records and matching province/ward relationships without fixed dataset totals.
+- Add seven-day last-known-good fallback while preserving REST v1 response schemas.
+- Add ownership-safe, expiring refresh leases in the existing WordPress options table.
+- Add short detail-404 negative caching, failure backoff and bounded Retry-After handling.
+- Allow at most one retry for fast transient failures, with no sleeps or doubled long timeouts.
+- Add validated TTL/attempt filters and diagnostics without logging payloads or personal information.
+- Isolate runtime state in existing tests, update superseded internal assertions and add 60 reliability tests.
+- Preserve the frozen REST fixture, branding, release version, requirements and legacy facade.
+
 ## Unreleased — Phase 2 (development of 2.0.0)
 
 - Extracted REST v1 controller and explicit legacy error mapping.

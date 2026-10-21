@@ -1,6 +1,6 @@
-# Core architecture — Phase 2
+# Core architecture — Phase 3
 
-Phase 2 remains development of plugin 2.0.0. No database migration, cache reset, reactivation, provider reconfiguration or release-version bump is required. The main filename stays `vn-address-api.php`.
+Phase 3 remains development of plugin 2.0.0. No database migration, cache reset, reactivation, provider reconfiguration or release-version bump is required. The main filename stays `vn-address-api.php`.
 
 ```text
 WordPress REST v1             VN_Address_API_2025 (public facade)
@@ -36,7 +36,11 @@ Textdomain loading, `vnap_version` checkpoint and lifecycle behavior remain from
 | ErrorMapper | Map internal WP_Error codes to frozen v1 messages, statuses and error data |
 | AddressService | Normalize, filter and sort application results; check payload usability and not-found branch |
 | AddressProviderInterface | Raw province list or raw province detail/ward context; array or WP_Error |
-| ProvinceOpenApiProvider | Fixed upstream URLs, raw fetch coordination, cache keys and TTL ownership |
+| ProvinceOpenApiProvider | Fixed URLs, validated active/LKG state, negative/failure markers and retry coordination |
+| ProvinceOpenApiValidator | Required provider fields, unique codes and requested/returned/ward parent consistency |
+| ReliabilityPolicy | Safe TTL/attempt filters, short retry window and bounded Retry-After |
+| RefreshLock | Ownership-safe expiring leases in the existing options table |
+| Logger | Redacted diagnostic action and optional WP_DEBUG logging |
 | CacheInterface / AddressCache | Read/write/delete transients; false exclusively means miss |
 | HttpClient | wp_remote_get, transport/status checks and JSON-array decoding; no address mapping or provider URL |
 | Normalizer | Legacy field mapping, prefixes, scalar defaults and static city classification |
@@ -69,24 +73,30 @@ Unknown internal error codes map to the safe invalid-payload v1 error; internal 
 
 ## Cache flow and upgrade compatibility
 
-Only the provider owns cache coordination:
+Only the provider owns cache coordination. It validates legacy active keys before use, checks LKG/short markers on a miss, acquires a refresh lease, then performs HTTP and provider validation **before** writing active/LKG data. Invalid active data is deleted/ignored and cannot be served. Invalid remote data never replaces LKG. The service retains its generic defensive validation and builds application results after provider retrieval.
 
-1. Look up `vn_address_provinces_v2` or `vn_address_province_{code}_depth2`.
-2. Return a raw-array hit, including `[]`; no HTTP request or TTL rewrite.
-3. On `false`, request the unchanged upstream URL with timeout 15, redirect limit 3 and original headers.
-4. Cache decoded raw arrays for `DAY_IN_SECONDS`; never cache HTTP/transport/JSON errors.
-5. Service validates and builds application results after retrieval.
+Default active TTL and raw format remain unchanged. LKG has longer retention. 404 negative state, transient-failure backoff and bounded retry are infrastructure behavior, not public REST fields. See [cache-reliability.md](cache-reliability.md) for exact keys, lease algorithm, filters and policy bounds.
 
-Existing Phase 1 raw transients are compatible. Shape validation remains after the raw-cache write to avoid silently changing cache semantics. Structurally invalid arrays can therefore remain cached until expiry; they now produce a safe v1-shaped 502 instead of a warning/fatal. Corrupt non-array cache values also produce a safe error, without introducing retry, invalidation or negative-cache behavior.
+```text
+Provider → validated active ── hit → return
+                   ↓ miss
+          LKG / markers / refresh lease
+                   ↓ owner
+           HTTP → provider validation
+                  ↙          ↘
+                valid       failure
+                  ↓          ↓
+             active + LKG   LKG or v1-mapped error
+```
 
 ## Validation boundaries and deliberate compatibility
 
 - Province lists must be list-shaped arrays of record arrays. Consumed fields must be scalar or absent/null; optional field defaults are preserved.
 - Detail with empty/missing code still follows the original not-found branch before ward validation.
-- Missing or null `wards` still becomes `[]`.
+- Generic service/normalizer defaults still map missing/null wards to `[]` for other provider implementations; Province Open API detail is now required to contain an array `wards` before caching. Empty array remains valid for wards, not for the province dataset.
 - Ward `province_code` remains 0 if absent; no parent inference or code-matching rule was introduced.
 - Malformed non-scalar records/fields and invalid ward collections are rejected without cast warnings/TypeError. This protects unsupported malformed payloads; valid v1 payloads remain unchanged.
-- No strict numeric existence check, accent folding, locale collation, payload code-matching or dynamic city reclassification was introduced.
+- Provider validation checks required positive integer-compatible codes, uniqueness and parent matching. V1 request coercion, accent behavior, locale-independent ordering and static city classification remain unchanged.
 
 Public routes remain GET and unauthenticated. Remote URLs are fixed inside the provider; no REST argument or option supplies an arbitrary URL to HttpClient. The client is injectable for tests but is not exposed as a public proxy.
 
@@ -98,6 +108,6 @@ The facade preserves `NS`, `UPSTREAM`, `CACHE_TTL`, `init(): void`, `register_ro
 
 ## Verification and deferred work
 
-The frozen baseline fixture is unchanged. The 42 new core checks mock all outbound calls and use provider/cache doubles; cache adapter checks use real WordPress transients. Run instructions: [tests](../tests/README.md). Results: [Phase 2 validation](phase2-validation.md).
+The frozen baseline fixture is unchanged. The 42 existing core checks retain public assertions and update superseded cache expectations. Another 60 reliability checks cover validation/fallback/retry/locking with mocks, simulated time and actual option leases. Run instructions: [tests](../tests/README.md). Results: [Phase 3 validation](phase3-validation.md).
 
-Deferred: local repository/dataset, sync, stale fallback, locks, retry/backoff, negative cache, stricter versioned schemas/error semantics, provider code matching, multisite matrix, and integrations. No Phase 3 functionality is included.
+Deferred: local repository/dataset, sync, versioned public schemas/error semantics, full multisite/external-cache matrix and integrations. Phase 4 has not started.

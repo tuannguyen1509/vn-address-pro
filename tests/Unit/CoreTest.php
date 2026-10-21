@@ -73,7 +73,10 @@ $assert = static function ( bool $condition, string $message = 'Assertion failed
 };
 $passed = 0;
 $failures = array();
-$test = static function ( string $name, callable $callback ) use ( &$passed, &$failures ): void {
+require_once dirname( __DIR__ ) . '/Support/CacheState.php';
+$state = new \Tunlamweb\VNAddressPro\Tests\Support\CacheState();
+$test = static function ( string $name, callable $callback ) use ( &$passed, &$failures, $state ): void {
+    $state->clear();
     try {
         $callback();
         ++$passed;
@@ -100,7 +103,7 @@ $intercept = static function ( $pre, $args, $url ) use ( &$http_result, &$http_c
 };
 add_filter( 'pre_http_request', $intercept, PHP_INT_MAX, 3 );
 $saved = array();
-foreach ( array( 'vnap_unit_cache', 'vn_address_provinces_v2', 'vn_address_province_1_depth2' ) as $key ) {
+foreach ( array( 'vnap_unit_cache' ) as $key ) {
     $saved[ $key ] = get_transient( $key );
 }
 set_error_handler( static function ( $level, $message, $file, $line ) {
@@ -226,7 +229,9 @@ try {
         $provider = new ProvinceOpenApiProvider( $http, $memory );
         $assert( $provider->get_provinces() === $raw_list );
         $assert( $http->calls === array( ProvinceOpenApiProvider::UPSTREAM . '/p/' ) );
-        $assert( $memory->writes === array( array( 'vn_address_provinces_v2', $raw_list, DAY_IN_SECONDS ) ) );
+        $keys = ProvinceOpenApiProvider::runtime_keys();
+        $assert( $memory->values[ $keys['active'] ] === $raw_list && $memory->values[ $keys['lkg'] ] === $raw_list );
+        $assert( in_array( array( $keys['active'], $raw_list, DAY_IN_SECONDS ), $memory->writes, true ) );
     } );
     $test( 'Provider: existing legacy cache avoids HTTP and cache rewrite', static function () use ( $assert, $raw_list ) {
         $http = new StubHttpClient();
@@ -242,29 +247,37 @@ try {
         $provider = new ProvinceOpenApiProvider( $http, $memory );
         $assert( $provider->get_wards( 1 ) === $raw_detail && $provider->get_province( 1 ) === $raw_detail );
         $assert( $http->calls === array( ProvinceOpenApiProvider::UPSTREAM . '/p/1?depth=2' ) );
-        $assert( $memory->writes === array( array( 'vn_address_province_1_depth2', $raw_detail, DAY_IN_SECONDS ) ) );
+        $keys = ProvinceOpenApiProvider::runtime_keys( 1 );
+        $assert( $memory->values[ $keys['active'] ] === $raw_detail && $memory->values[ $keys['lkg'] ] === $raw_detail );
     } );
-    $test( 'Provider: empty raw array is cached and reused', static function () use ( $assert ) {
+    $test( 'Provider: empty detail never becomes active data', static function () use ( $assert ) {
         $http = new StubHttpClient();
-        $provider = new ProvinceOpenApiProvider( $http, new MemoryCache() );
-        $assert( $provider->get_province( 1 ) === array() && $provider->get_province( 1 ) === array() );
+        $memory = new MemoryCache();
+        $provider = new ProvinceOpenApiProvider( $http, $memory );
+        $assert( $provider->get_province( 1 )->get_error_code() === 'vnap_not_found' );
+        $assert( $provider->get_province( 1 )->get_error_code() === 'vnap_not_found' );
+        $keys = ProvinceOpenApiProvider::runtime_keys( 1 );
+        $assert( ! isset( $memory->values[ $keys['active'] ] ) && ! isset( $memory->values[ $keys['lkg'] ] ) );
         $assert( count( $http->calls ) === 1 );
     } );
-    $test( 'Provider: errors are not cached', static function () use ( $assert ) {
+    $test( 'Provider: failures use short markers, never active or LKG', static function () use ( $assert ) {
         $http = new StubHttpClient();
         $http->result = new \WP_Error( 'vnap_transport_error', 'test' );
         $memory = new MemoryCache();
         $provider = new ProvinceOpenApiProvider( $http, $memory );
-        $assert( $provider->get_provinces() === $http->result );
-        $assert( $provider->get_provinces() === $http->result );
-        $assert( count( $http->calls ) === 2 && $memory->writes === array() );
+        $assert( $provider->get_provinces()->get_error_code() === 'vnap_transport_error' );
+        $assert( $provider->get_provinces()->get_error_code() === 'vnap_transport_error' );
+        $keys = ProvinceOpenApiProvider::runtime_keys();
+        $assert( count( $http->calls ) === 2 && isset( $memory->values[ $keys['failure'] ] ) );
+        $assert( ! isset( $memory->values[ $keys['active'] ] ) && ! isset( $memory->values[ $keys['lkg'] ] ) );
     } );
-    $test( 'Provider: corrupt non-array cached value returns error', static function () use ( $assert ) {
+    $test( 'Provider: corrupt active value is removed before refresh', static function () use ( $assert ) {
         $memory = new MemoryCache();
         $memory->values['vn_address_provinces_v2'] = 'bad';
         $http = new StubHttpClient();
         $provider = new ProvinceOpenApiProvider( $http, $memory );
-        $assert( $provider->get_provinces()->get_error_code() === 'vnap_invalid_payload' && $http->calls === array() );
+        $assert( $provider->get_provinces()->get_error_code() === 'vnap_invalid_payload' && count( $http->calls ) === 1 );
+        $assert( ! isset( $memory->values['vn_address_provinces_v2'] ) );
     } );
 
     $client = new HttpClient();
@@ -284,12 +297,14 @@ try {
         $assert( array( 'status' => $mapped->get_status(), 'body' => $mapped->get_data() ) === $fixture['error_transport'] );
     } );
     foreach ( array( 404, 429, 500 ) as $status ) {
-        $test( 'HTTP ' . $status . ': provider and v1 mapping remain 502, no error cache', static function () use ( $assert, $status, $client, $response, &$http_result ) {
+        $test( 'HTTP ' . $status . ': provider and v1 mapping remain 502 without fallback', static function () use ( $assert, $status, $client, $response, &$http_result ) {
             $http_result = $response( $status, '{"error":"fixture"}' );
             $memory = new MemoryCache();
             $provider = new ProvinceOpenApiProvider( $client, $memory );
             $error = $provider->get_provinces();
-            $assert( $error->get_error_code() === 'vnap_remote_http_error' && $memory->writes === array() );
+            $assert( $error->get_error_code() === 'vnap_remote_http_error' );
+            $keys = ProvinceOpenApiProvider::runtime_keys();
+            $assert( ! isset( $memory->values[ $keys['active'] ] ) && ! isset( $memory->values[ $keys['lkg'] ] ) && ! isset( $memory->values[ $keys['negative'] ] ) );
             $mapped = ErrorMapper::map( $error );
             $assert( $mapped->get_error_code() === 'vn_address_upstream_http_error' );
             $assert( $mapped->get_error_data() === array( 'status' => 502, 'upstream_status' => $status ) );
@@ -317,10 +332,10 @@ try {
         $assert( $mapped->get_error_code() === 'vn_address_invalid_json' && strpos( $mapped->get_error_message(), 'secret' ) === false );
     } );
 
-    set_transient( 'vn_address_provinces_v2', $raw_list, DAY_IN_SECONDS );
-    set_transient( 'vn_address_province_1_depth2', $raw_detail, DAY_IN_SECONDS );
     foreach ( array( 'get_provinces' => 'provinces', 'get_wards' => 'wards', 'get_province' => 'province' ) as $method => $snapshot ) {
         $test( 'Legacy: direct ' . $method . ' output and signature', static function () use ( $assert, $method, $snapshot, $fixture ) {
+            set_transient( 'vn_address_provinces_v2', $fixture['cache_payloads'][0], DAY_IN_SECONDS );
+            set_transient( 'vn_address_province_1_depth2', $fixture['cache_payloads'][1], DAY_IN_SECONDS );
             $reflection = new \ReflectionMethod( 'VN_Address_API_2025', $method );
             $assert( $reflection->isPublic() && $reflection->isStatic() && $reflection->getNumberOfParameters() === 1 );
             $assert( (string) $reflection->getParameters()[0]->getType() === 'WP_REST_Request' && $reflection->getReturnType() === null );
@@ -349,6 +364,7 @@ try {
         $assert( count( $http_calls ) === $count );
     } );
     $test( 'Controller: direct non-scalar search causes no warning', static function () use ( $assert, $fixture ) {
+        set_transient( 'vn_address_provinces_v2', $fixture['cache_payloads'][0], DAY_IN_SECONDS );
         $request = new \WP_REST_Request( 'GET' );
         $request->set_param( 'search', array( 'bad' ) );
         $assert( \VN_Address_API_2025::get_provinces( $request )->get_data() === $fixture['provinces']['body'] );
@@ -356,6 +372,7 @@ try {
 } finally {
     restore_error_handler();
     remove_filter( 'pre_http_request', $intercept, PHP_INT_MAX );
+    $state->restore();
     foreach ( $saved as $key => $value ) {
         delete_transient( $key );
         if ( $value !== false ) {
