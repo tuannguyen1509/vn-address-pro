@@ -44,12 +44,20 @@ Không cần Composer hoặc bước cài dependency. Autoloader nội bộ ch�
 
 ## Development Status
 
-Phase 1 — Contract & Foundation. Class legacy `VN_Address_API_2025` và toàn bộ public methods vẫn tồn tại; logic REST nằm nguyên trong `includes/legacy-api.php`.
+Phase 2 — Refactor Core Architecture, tiếp tục development của version 2.0.0. Class legacy `VN_Address_API_2025`, constants và toàn bộ public methods vẫn tồn tại dưới dạng facade trong `includes/legacy-api.php`; mọi xử lý delegate sang core mới.
 
 Bootstrap: entrypoint → requirements → autoloader → `Plugin::instance()->boot()` → legacy registration → `vnap_loaded`. Textdomain và version check chạy trên `init`. Hook `vnap_loaded` không có arguments, fire đúng một lần sau khi class/API registration callback đã sẵn sàng; routes thực tế được đăng ký tại `rest_api_init`. Integration muốn nghe hook phải đăng ký trước khi plugin boot; plugin tải sau có thể dùng `did_action('vnap_loaded')`.
 
 Quy ước cho code mới: namespace `Tunlamweb\VNAddressPro`, PHP/options/hooks `vnap_`, CSS `.vnap-`, JavaScript `VNAddressPro`, text domain `vn-address-pro`. Chưa thêm CSS/JS runtime.
 
 Chưa triển khai WooCommerce, form integrations, custom database, local dataset hoặc data sync. Xem [tests](tests/README.md) và [changelog](CHANGELOG.md).
+
+## Architecture
+
+REST v1 Controller → AddressService → ProvinceOpenApiProvider → Transients cache / HttpClient. Normalizer, Validator và Search được tách riêng. Provider interface cho phép thay dependency trong code hoặc test; chưa có UI/chức năng chuyển provider. HttpClient không biết URL nguồn cụ thể; chỉ provider dùng URL upstream cố định, không nhận URL từ request công khai.
+
+Core trả `array` hoặc `WP_Error` có mã `vnap_`; REST boundary map về schema/lỗi cũ. Validator giữ default của field optional và cách ép mã v1, đồng thời chặn payload sai cấu trúc/kiểu để tránh warning và TypeError. Normalizer giữ `province_code: 0` khi ward thiếu parent, không tự suy ra mã khác.
+
+`Plugin::instance()->address_service()` và `rest_controller()` là API nội bộ tạm thời, chưa có cam kết ổn định như developer facade chính thức. Xem [architecture](docs/architecture.md) và [Phase 2 validation](docs/phase2-validation.md).
 
 Future Migration Recommendation: chỉ cân nhắc đổi folder/main filename khi có kế hoạch migration đã kiểm chứng bảo toàn activation identity. Phase 1 không rename.

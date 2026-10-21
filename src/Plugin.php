@@ -3,13 +3,23 @@ namespace Tunlamweb\VNAddressPro;
 
 use Tunlamweb\VNAddressPro\Compatibility\Legacy;
 use Tunlamweb\VNAddressPro\Support\Requirements;
+use Tunlamweb\VNAddressPro\Address\AddressService;
+use Tunlamweb\VNAddressPro\Address\Normalizer;
+use Tunlamweb\VNAddressPro\Address\Validator;
+use Tunlamweb\VNAddressPro\Cache\AddressCache;
+use Tunlamweb\VNAddressPro\Http\HttpClient;
+use Tunlamweb\VNAddressPro\Providers\ProvinceOpenApiProvider;
+use Tunlamweb\VNAddressPro\Rest\V1\AddressController;
+use Tunlamweb\VNAddressPro\Support\Search;
 
 defined( 'ABSPATH' ) || exit;
 
-/** Bootstrap and lifecycle only. Address/REST logic remains in the legacy API. */
+/** Composition root and lifecycle only. No address or REST business logic. */
 final class Plugin {
     private static ?self $instance = null;
     private bool $booted = false;
+    private ?AddressService $address_service = null;
+    private ?AddressController $rest_controller = null;
 
     private function __construct() {}
     private function __clone() {}
@@ -25,6 +35,7 @@ final class Plugin {
         if ( $this->booted ) {
             return;
         }
+        $this->rest_controller();
         Legacy::load();
         $this->booted = true;
         add_action( 'init', array( $this, 'load_textdomain' ), 0 );
@@ -35,6 +46,23 @@ final class Plugin {
 
     public function load_textdomain(): void {
         load_plugin_textdomain( 'vn-address-pro', false, dirname( VNAP_BASENAME ) . '/languages' );
+    }
+
+    /** Internal, provisional API; the stable developer facade is a later phase. */
+    public function address_service(): AddressService {
+        if ( $this->address_service === null ) {
+            $provider = new ProvinceOpenApiProvider( new HttpClient(), new AddressCache() );
+            $this->address_service = new AddressService( $provider, new Normalizer(), new Validator(), new Search() );
+        }
+        return $this->address_service;
+    }
+
+    /** Internal compatibility access, not a stable developer API. */
+    public function rest_controller(): AddressController {
+        if ( $this->rest_controller === null ) {
+            $this->rest_controller = new AddressController( $this->address_service() );
+        }
+        return $this->rest_controller;
     }
 
     public function maybe_upgrade(): void {
@@ -59,6 +87,6 @@ final class Plugin {
     }
 
     public static function deactivate( bool $network_wide = false ): void {
-        // No scheduled jobs or temporary resources in Phase 1. Preserve options/cache.
+        // No scheduled jobs or temporary resources. Preserve options/cache.
     }
 }

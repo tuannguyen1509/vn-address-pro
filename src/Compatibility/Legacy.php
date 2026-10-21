@@ -10,7 +10,7 @@ final class Legacy {
         if ( self::$loaded ) {
             return;
         }
-        // A concurrently active old copy owns its own class and REST hook.
+        // Preserve an already loaded class; a second separately installed copy is unsupported.
         if ( ! class_exists( 'VN_Address_API_2025', false ) ) {
             require_once VNAP_PATH . 'includes/legacy-api.php';
             \VN_Address_API_2025::init();

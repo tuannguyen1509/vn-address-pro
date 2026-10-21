@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased — Phase 2 (development of 2.0.0)
+
+- Extracted REST v1 controller and explicit legacy error mapping.
+- Extracted address service, normalizer, validator and unchanged search logic.
+- Added provider/cache contracts, Province Open API adapter and JSON HTTP client.
+- Kept raw cache keys/TTL, request settings, legacy coercions, ordering and health values.
+- Converted the legacy class into a delegating facade, preserving public signatures/constants and registration hook identity.
+- Added safe handling of structurally invalid payloads and non-scalar direct-call searches.
+- Added 42 offline core checks and an optional live HTTP smoke runner.
+- Kept release version, requirements, entrypoint, autoloader and database lifecycle unchanged.
+
 ## 2.0.0
 
 - Changed plugin display name to VN Address Pro and author metadata to Tunlamweb.
