@@ -9,6 +9,8 @@
  * Domain Path: /languages
  * Requires PHP: 8.1
  * Requires at least: 6.3
+ * WC requires at least: 8.2.0
+ * WC tested up to: 11.2.1
  */
 
 defined( 'ABSPATH' ) || exit;

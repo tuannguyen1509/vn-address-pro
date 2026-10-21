@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased — Phase 7 (development of 2.0.0)
+
+- Add an optional WooCommerce 8.2+ module and dynamic Vietnam province states with a stable VN-{code} contract.
+- Enhance Classic billing/shipping through the existing vanilla address component and a thin Woo event adapter.
+- Validate canonical province/ward pairs before order creation, resolve names server-side and preserve international checkout.
+- Persist order/customer codes through Woo CRUD and historical province-name snapshots for readable native addresses/emails.
+- Verify HPOS and legacy stores, declare HPOS compatibility and explicitly exclude Cart/Checkout Blocks.
+- Add Woo system-status diagnostics without integration settings or mandatory Woo dependency.
+- Add offline checkout, account, shipping/tax, AJAX, tampering and datastore regression tests.
+
 ## Unreleased — Phase 6 (development of 2.0.0)
 
 - Add reusable server-rendered province/dependent ward fields and optional address line.

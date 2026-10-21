@@ -45,13 +45,21 @@ Không cần Composer hoặc bước cài dependency. Autoloader nội bộ ch�
 
 ## Development Status
 
-Phase 6 — Reusable Frontend Address Component, tiếp tục development của version 2.0.0. Class legacy `VN_Address_API_2025`, constants và toàn bộ public methods vẫn tồn tại dưới dạng facade trong `includes/legacy-api.php`; mọi xử lý delegate sang core mới.
+Phase 7 — WooCommerce Core Integration & Classic Checkout, tiếp tục development của version 2.0.0. Class legacy `VN_Address_API_2025`, constants và toàn bộ public methods vẫn tồn tại dưới dạng facade trong `includes/legacy-api.php`; mọi xử lý delegate sang core mới.
 
 Bootstrap: entrypoint → requirements → autoloader → `Plugin::instance()->boot()` → legacy registration → `vnap_loaded`. Textdomain và version check chạy trên `init`. Hook `vnap_loaded` không có arguments, fire đúng một lần sau khi class/API registration callback đã sẵn sàng; routes thực tế được đăng ký tại `rest_api_init`. Integration muốn nghe hook phải đăng ký trước khi plugin boot; plugin tải sau có thể dùng `did_action('vnap_loaded')`.
 
 Quy ước cho code mới: namespace `Tunlamweb\VNAddressPro`, PHP/options/hooks `vnap_`, CSS `.vnap-`, JavaScript `VNAddressPro`, text domain `vn-address-pro`. Chưa thêm CSS/JS runtime.
 
-Đã có persistent local database, offline normal lookup, manual/scheduled dataset updates, integrity validation, safe repair/recovery và frontend fields dùng lại được. Chưa triển khai WooCommerce hoặc form integrations. Xem [tests](tests/README.md) và [changelog](CHANGELOG.md).
+Đã có persistent local database, offline normal lookup, manual/scheduled dataset updates, integrity validation, safe repair/recovery và frontend fields dùng lại được. WooCommerce là module tùy chọn với Classic Checkout; chưa có Checkout Block hoặc form integrations. Xem [tests](tests/README.md) và [changelog](CHANGELOG.md).
+
+## WooCommerce Classic Checkout
+
+Module tự bật khi WooCommerce 8.2.0+ active; core vẫn chạy khi Woo không cài hoặc bị deactivate. Đã kiểm thử Woo 8.2.0/PHP 8.1 và Woo 11.2.1/PHP 8.3, với HPOS và legacy order storage. Minimum dựa trên mốc [HPOS ổn định của Woo 8.2](https://developer.woocommerce.com/2023/10/10/woocommerce-8-2-0-released/); không nâng requirements của address core.
+
+Hỗ trợ checkout page cấu hình bằng `[woocommerce_checkout]`, billing/shipping hai cấp, server validation và lưu canonical codes qua Woo CRUD. Province dùng state identifier `VN-{code}`, city giữ tên ward dễ đọc. Lookup checkout dùng local DB, hoạt động khi provider bên ngoài mất kết nối. Non-VN checkout giữ native Woo behavior; postcode/address_2/phone/email không bị xóa.
+
+**Không hỗ trợ Cart/Checkout Blocks hoặc Store API trong phase này.** Existing shipping zones/taxes dùng state keys từ plugin khác cần kiểm tra lại; không có tự động migration. Xem [WooCommerce integration](docs/woocommerce.md), [state code contract](docs/woocommerce-state-codes.md) và [Phase 7 validation](docs/phase7-validation.md).
 
 ## Frontend address fields
 

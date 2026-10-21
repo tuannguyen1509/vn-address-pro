@@ -1,4 +1,4 @@
-# Core architecture — Phase 6
+# Core architecture — Phase 7
 
 Phase 5 remains development of plugin 2.0.0. Schema/dataset versions are independent of the release. Tables/data install on activation or the existing init upgrade checkpoint; no reactivation or remote configuration is required. The main filename stays `vn-address-api.php`. Sync/admin hooks register once from Plugin; no remote sync runs on frontend init.
 
@@ -154,4 +154,18 @@ Shortcode / vnap_render_address_fields / AddressComponent::render
 
 Frontend classes do not query SQL or access providers directly. Client code uses native selects, per-instance cancellation/sequence state, page-local successful ward cache and bubbling vnap: events. No global asset enqueue, form submission, new REST endpoint or integration is added. AddressService::validate_selection() is an additive strict relationship check for consumers; it does not change legacy v1 input coercion. See [frontend component](frontend-component.md) and [Phase 6 validation](phase6-validation.md).
 
-Deferred: WooCommerce/form adapters, versioned public error/schema changes, trusted upstream snapshot manifests and full multisite/external-cache matrix.
+## Optional WooCommerce module
+
+```text
+Plugin → plugins_loaded → supported WooCommerce?
+                           ↓
+                 WooCommerceIntegration (single registration)
+                  ├─ States / VN locale / Compatibility
+                  ├─ ClassicCheckout → AddressValidator → AddressService
+                  ├─ OrderAddress / CustomerAddress → Woo CRUD
+                  └─ Assets → thin Classic event adapter → Phase 6 JS
+```
+
+Core services do not call Woo APIs. Checkout integration skips REST/Blocks/unknown checkout pages; states and historical order formatting are Woo core concerns. The existing native fields and Woo AJAX events remain authoritative. Canonical validation is reused, not reimplemented, and there is no provider HTTP/data sync code in the module. See [Woo integration](woocommerce.md), [persistent state identifiers](woocommerce-state-codes.md) and [Phase 7 validation](phase7-validation.md).
+
+Deferred: Checkout Block/Store API, My Account/order-editor enhancements, form adapters, legacy migration, trusted upstream snapshot manifests and the full multisite/external-cache matrix.

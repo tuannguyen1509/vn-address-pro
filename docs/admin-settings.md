@@ -25,6 +25,8 @@ Feedback after successful recovery identifies the selected source. No Delete All
 
 Shows WordPress/PHP/plugin/schema/dataset versions, local availability, source/counts, last operation, recurrence/next scheduled execution, WP-Cron configuration, persistent object-cache presence and current engines for the two address tables plus options. Missing/non-InnoDB tables show Needs Repair. It does not alter engines.
 
+Phase 7 also shows WooCommerce version/detection, supported/inactive integration state, configured checkout type, HPOS mode and unsupported Checkout Blocks status. No WooCommerce settings tab/toggle or global admin notice is added.
+
 Operation times use the site's WordPress timezone. Snapshot generated_at is explicitly labeled UTC. Admin notices are capability restricted; frontend visitors receive no administrative debug information.
 
 The page uses native WordPress navigation, tables, forms, labels and notices. It loads **no custom CSS or JS assets**, either on this page or elsewhere. New markup classes use vnap-. Server-rendered feedback requires no async accessibility mechanism.

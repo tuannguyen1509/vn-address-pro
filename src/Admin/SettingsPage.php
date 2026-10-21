@@ -117,6 +117,7 @@ final class SettingsPage {
             );
             if ( $tab === 'status' ) {
                 global $wp_version, $wpdb;
+                $rows += \Tunlamweb\VNAddressPro\Integrations\WooCommerce\Compatibility::status();
                 $rows += array(
                     __( 'WordPress Version', 'vn-address-pro' ) => $wp_version,
                     __( 'PHP Version', 'vn-address-pro' ) => PHP_VERSION,

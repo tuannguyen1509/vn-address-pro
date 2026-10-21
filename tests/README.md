@@ -96,3 +96,27 @@ VNAP_TEST_URL="http://your-disposable-test-server/" node /path/to/plugin/tests/F
 The browser runner resolves Playwright from the current working directory; no npm package or production build step is required by plugin users. It runs 41 Chromium checks covering actual offline same-site requests, multiple instances, initial values, fulfilled caching, no duplicate init, deliberately reversed responses that ignore abort, controlled failures/malformed payloads, invalid markup/ward relationships, reset, destroy/re-init, keyboard/mobile layout, event contracts and clean console. Temporary browser mocks exercise failure states without intentional HTTP-503 resource noise in the console. It creates no screenshots/log dumps in the repository.
 
 Remove both MU fixtures before ordinary server suites/admin HTTP tests so the blocker does not override remote mocks. Existing Phase 1–5 tests and baseline JSON remain unchanged. See [Phase 6 results](../docs/phase6-validation.md).
+
+## Phase 7 WooCommerce checks
+
+Use a **disposable site/database only**. `WooCommerce/Setup.php` intentionally replaces Woo checkout/cart pages and shipping-zone/payment/tax settings and creates a synthetic product. It is not a merchant configuration wizard. Test on a vendor-supported PHP/WP pairing; validation uses WC 8.2.0/PHP 8.1/WP 6.3.7 and WC 11.2.1/PHP 8.3/WP 7.1.3.
+
+```sh
+wp eval-file wp-content/plugins/vn-address-pro/tests/WooCommerce/Setup.php
+wp eval-file wp-content/plugins/vn-address-pro/tests/WooCommerce/IntegrationTest.php
+```
+
+The integration runner verifies state mapping, strict validation, independent billing/shipping, CRUD/snapshots/native email formatting, customer metadata, zones/taxes, Block exclusion and declarations. Run separately with HPOS enabled and legacy storage. **Synchronize existing test orders with Woo's official CLI before switching stores**, e.g. `wp wc hpos sync` (current) or `wp wc cot sync` (8.2); do not bypass Woo's pending-sync protection.
+
+Copy `WooCommerce/OfflineFixture.php` to the disposable site's mu-plugins directory for actual HTTP/browser tests. It denies outgoing HTTP, counts address-provider attempts, intercepts wp_mail, isolates unrelated Woo admin/update checks, and supplies a test-only COD failure plus order-key-protected read-only report. Never install it on production. Set its vnap_test_address_http_count to zero before validation; expected result remains zero.
+
+From the temporary Playwright directory used above, supply VNAP_TEST_URL and VNAP_TEST_PRODUCT from Setup output; optionally VNAP_CHECKOUT_URL for subdirectory/index.php permalink installations:
+
+```sh
+node /path/to/plugin/tests/WooCommerce/BrowserTest.mjs
+node /path/to/plugin/tests/WooCommerce/HttpCheckoutTest.mjs
+```
+
+BrowserTest exercises real Classic fields, state/ward changes, shipping toggles/zones, AJAX and replaced address fragments, VN↔US, malicious submissions, failed payment/retry and successful guest checkout. HttpCheckoutTest exercises create-account BACS, logged-in COD and foreign BACS orders and reads authoritative order/customer metadata through the test report. Orders/accounts remain only in the disposable database for inspection; do not run against production. No gateway is altered by production code.
+
+With Woo deactivated, run `WooCommerce/AbsentTest.php` plus the full existing core suites; the absent runner also simulates an unsupported WC version in its own process. Remove the offline MU fixture before ordinary provider mock suites. No public REST baseline is regenerated. See [Phase 7 results](../docs/phase7-validation.md).
