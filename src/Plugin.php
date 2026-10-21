@@ -45,6 +45,7 @@ final class Plugin {
         Legacy::load();
         ( new \Tunlamweb\VNAddressPro\Sync\DatasetScheduler() )->register();
         ( new \Tunlamweb\VNAddressPro\Admin\SettingsPage() )->register();
+        add_action( 'init', array( new \Tunlamweb\VNAddressPro\Frontend\Shortcode(), 'register' ) );
         $this->booted = true;
         add_action( 'init', array( $this, 'load_textdomain' ), 0 );
         add_action( 'init', array( $this, 'maybe_upgrade' ), 1 );

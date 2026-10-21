@@ -76,3 +76,23 @@ For actual admin HTTP transport, copy `Support/SyncHttpFixture.php` into the dis
 For actual offline REST transport, install Support/BlockHttp.php as a temporary MU fixture, reset its outbound counter, run `VNAP_TEST_URL=... node tests/OfflineHttpSmokeTest.mjs`, then verify the counter stayed zero. Disable unrelated WP-Cron in this environment and remove the fixture afterwards. See [Phase 5 results](../docs/phase5-validation.md).
 
 Optional upstream availability check, never publishes: `wp eval-file wp-content/plugins/vn-address-pro/tests/RemoteDatasetSmokeTest.php`.
+
+## Phase 6 frontend checks
+
+```sh
+wp eval-file wp-content/plugins/vn-address-pro/tests/Frontend/RenderTest.php
+```
+
+This adds 32 PHP checks for shortcode/API rendering, names/labels, flags, escaping, unique IDs, asset isolation and authoritative server relationship validation. HTTP is denied throughout. It changes only process-local script queues/screen context; use a separate CLI invocation as with the other suites.
+
+For browser tests, use a disposable site, enable WP_DEBUG/WP_DEBUG_LOG and disable unrelated WP-Cron. Copy `Frontend/TestPage.php` and `Support/BlockHttp.php` into its mu-plugins directory; reset `vnap_test_http_count` before running and assert it remains zero afterwards. TestPage renders three components via shortcode/PHP after wp_head, plus a plain page with no component. Never install test MU fixtures on production.
+
+Install Playwright in a **temporary directory outside the repository**, matching your browser/image version (validation used Playwright 1.64.0 with its corresponding Docker image). Run from that directory:
+
+```sh
+VNAP_TEST_URL="http://your-disposable-test-server/" node /path/to/plugin/tests/Frontend/BrowserTest.mjs
+```
+
+The browser runner resolves Playwright from the current working directory; no npm package or production build step is required by plugin users. It runs 41 Chromium checks covering actual offline same-site requests, multiple instances, initial values, fulfilled caching, no duplicate init, deliberately reversed responses that ignore abort, controlled failures/malformed payloads, invalid markup/ward relationships, reset, destroy/re-init, keyboard/mobile layout, event contracts and clean console. Temporary browser mocks exercise failure states without intentional HTTP-503 resource noise in the console. It creates no screenshots/log dumps in the repository.
+
+Remove both MU fixtures before ordinary server suites/admin HTTP tests so the blocker does not override remote mocks. Existing Phase 1–5 tests and baseline JSON remain unchanged. See [Phase 6 results](../docs/phase6-validation.md).

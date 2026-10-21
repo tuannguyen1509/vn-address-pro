@@ -65,6 +65,24 @@ final class AddressService {
         return $province;
     }
 
+    /** Strict code/relationship validation for consumers; never trust submitted display names. */
+    public function validate_selection( $province_code, $ward_code ): array|\WP_Error {
+        $valid_code = static fn( $code ) => ( is_int( $code ) && $code > 0 ) || ( is_string( $code ) && preg_match( '/\A[0-9]+\z/', $code ) && (int) $code > 0 && ltrim( $code, '0' ) === (string) (int) $code );
+        if ( ! $valid_code( $province_code ) || ! $valid_code( $ward_code ) ) {
+            return new \WP_Error( 'vnap_invalid_selection', __( 'Mã Tỉnh / Thành phố hoặc Phường / Xã không hợp lệ.', 'vn-address-pro' ) );
+        }
+        $result = $this->get_wards( (int) $province_code );
+        if ( is_wp_error( $result ) ) { return $result; }
+        if ( (int) $result['province']['code'] === (int) $province_code ) {
+            foreach ( $result['wards'] as $ward ) {
+                if ( (int) $ward['code'] === (int) $ward_code && (int) $ward['province_code'] === (int) $province_code ) {
+                    return array( 'province' => $result['province'], 'ward' => $ward );
+                }
+            }
+        }
+        return new \WP_Error( 'vnap_invalid_selection', __( 'Phường / Xã không thuộc Tỉnh / Thành phố đã chọn.', 'vn-address-pro' ) );
+    }
+
     private function validate_detail( array|\WP_Error $data ): bool|\WP_Error {
         if ( is_wp_error( $data ) ) {
             return $data;

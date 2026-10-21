@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased — Phase 6 (development of 2.0.0)
+
+- Add reusable server-rendered province/dependent ward fields and optional address line.
+- Add vn_address_fields shortcode, namespaced HTML renderer and prefixed PHP helper.
+- Add conditional, scoped frontend assets and a dependency-free vanilla JavaScript instance API.
+- Support independent instances, initial selections, reset/destroy, accessible status/error states and custom events.
+- Protect dependent requests with cancellation, timeout, sequence guards and a page-local successful-response cache.
+- Add strict reusable server-side province/ward relationship validation without changing REST v1 coercion.
+- Add PHP rendering/escaping/asset checks and real browser offline/race/lifecycle regression coverage.
+- Preserve all dataset/schema/sync artifacts, existing REST fixture and legacy signatures.
+
 ## Unreleased — Phase 5 (development of 2.0.0)
 
 - Add native Settings → VN Address tabs and capability/action-nonce protected admin-post operations.

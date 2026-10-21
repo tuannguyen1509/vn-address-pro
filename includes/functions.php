@@ -17,3 +17,8 @@ function vnap_autoload( $class ) {
         require_once $file;
     }
 }
+
+/** Return reusable fields; the consuming application owns submission and server validation. */
+function vnap_render_address_fields( array $args = array() ): string {
+    return \Tunlamweb\VNAddressPro\Frontend\AddressComponent::render( $args );
+}

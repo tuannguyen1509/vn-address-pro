@@ -1,0 +1,11 @@
+.vnap-address { display: grid; gap: var(--vnap-gap, 1rem); min-width: 0; }
+.vnap-address .vnap-field { display: grid; gap: .35em; min-width: 0; }
+.vnap-address .vnap-select,
+.vnap-address .vnap-input { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; font: inherit; }
+.vnap-address .vnap-status,
+.vnap-address .vnap-error { margin: 0; }
+.vnap-address .vnap-status:empty,
+.vnap-address .vnap-error:empty { display: none; }
+.vnap-address .vnap-retry { justify-self: start; font: inherit; }
+.vnap-address [hidden] { display: none; }
+.vnap-address [aria-invalid="true"] { outline: 2px solid currentColor; outline-offset: 2px; }

@@ -45,13 +45,25 @@ Không cần Composer hoặc bước cài dependency. Autoloader nội bộ ch�
 
 ## Development Status
 
-Phase 5 — Dataset Sync & Administration, tiếp tục development của version 2.0.0. Class legacy `VN_Address_API_2025`, constants và toàn bộ public methods vẫn tồn tại dưới dạng facade trong `includes/legacy-api.php`; mọi xử lý delegate sang core mới.
+Phase 6 — Reusable Frontend Address Component, tiếp tục development của version 2.0.0. Class legacy `VN_Address_API_2025`, constants và toàn bộ public methods vẫn tồn tại dưới dạng facade trong `includes/legacy-api.php`; mọi xử lý delegate sang core mới.
 
 Bootstrap: entrypoint → requirements → autoloader → `Plugin::instance()->boot()` → legacy registration → `vnap_loaded`. Textdomain và version check chạy trên `init`. Hook `vnap_loaded` không có arguments, fire đúng một lần sau khi class/API registration callback đã sẵn sàng; routes thực tế được đăng ký tại `rest_api_init`. Integration muốn nghe hook phải đăng ký trước khi plugin boot; plugin tải sau có thể dùng `did_action('vnap_loaded')`.
 
 Quy ước cho code mới: namespace `Tunlamweb\VNAddressPro`, PHP/options/hooks `vnap_`, CSS `.vnap-`, JavaScript `VNAddressPro`, text domain `vn-address-pro`. Chưa thêm CSS/JS runtime.
 
-Đã có persistent local database, offline normal lookup, manual/scheduled dataset updates, integrity validation và safe repair/recovery. Chưa triển khai WooCommerce hoặc form integrations. Xem [tests](tests/README.md) và [changelog](CHANGELOG.md).
+Đã có persistent local database, offline normal lookup, manual/scheduled dataset updates, integrity validation, safe repair/recovery và frontend fields dùng lại được. Chưa triển khai WooCommerce hoặc form integrations. Xem [tests](tests/README.md) và [changelog](CHANGELOG.md).
+
+## Frontend address fields
+
+Thêm `[vn_address_fields]` vào Page/Post, hoặc dùng PHP API trả HTML:
+
+```php
+echo vnap_render_address_fields( array( 'show_address' => true ) );
+```
+
+Component có native province/ward selects, địa chỉ chi tiết tùy chọn, hidden display names, preselection và nhiều instance độc lập. Province render phía server; wards tải theo tỉnh qua REST v1 cùng website. Assets chỉ enqueue khi render; không cần jQuery, npm build hoặc browser gọi provider bên ngoài. Không có xử lý submit/lưu form. Consumer phải validate lại codes/quan hệ phía server bằng `AddressService::validate_selection()`.
+
+Xem [frontend component](docs/frontend-component.md) cho shortcode args, PHP/JavaScript API, events, asset timing và accessibility. Kết quả: [Phase 6 validation](docs/phase6-validation.md).
 
 ## Architecture
 

@@ -1,4 +1,4 @@
-# Core architecture — Phase 5
+# Core architecture — Phase 6
 
 Phase 5 remains development of plugin 2.0.0. Schema/dataset versions are independent of the release. Tables/data install on activation or the existing init upgrade checkpoint; no reactivation or remote configuration is required. The main filename stays `vn-address-api.php`. Sync/admin hooks register once from Plugin; no remote sync runs on frontend init.
 
@@ -140,4 +140,18 @@ SettingsPage (manage_options + action nonce) / DatasetScheduler
 
 DatasetSyncLock coordinates check/sync/repair/reinstall independently of lookup refresh leases. DatasetMetadata centralizes bounded operation state and dataset metadata. DatasetIntegrityAuditor reconstructs database content for explicit audit/repair and pre-commit verification. RemoteCacheCleaner invalidates only named active/negative/failure state, preserving LKG. SettingsPage renders native WordPress forms; no custom JS/CSS assets or public write endpoints exist. DatasetScheduler defaults disabled and runs only its registered WP-Cron job. See [sync design](dataset-sync.md), [admin UI](admin-settings.md) and [Phase 5 validation](phase5-validation.md).
 
-Deferred: reusable frontend component, versioned public error/schema changes, trusted upstream snapshot manifests, full multisite/external-cache matrix and integrations.
+## Reusable frontend path
+
+```text
+Shortcode / vnap_render_address_fields / AddressComponent::render
+                     ↓
+      AddressService provinces → FieldRenderer → unique HTML fields
+                     ↓
+      conditional Assets → VNAddressPro per-container instances
+                     ↓
+      same-origin REST v1 wards → existing service/local repository
+```
+
+Frontend classes do not query SQL or access providers directly. Client code uses native selects, per-instance cancellation/sequence state, page-local successful ward cache and bubbling vnap: events. No global asset enqueue, form submission, new REST endpoint or integration is added. AddressService::validate_selection() is an additive strict relationship check for consumers; it does not change legacy v1 input coercion. See [frontend component](frontend-component.md) and [Phase 6 validation](phase6-validation.md).
+
+Deferred: WooCommerce/form adapters, versioned public error/schema changes, trusted upstream snapshot manifests and full multisite/external-cache matrix.
