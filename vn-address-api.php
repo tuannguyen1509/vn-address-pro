@@ -50,6 +50,9 @@ if ( ! \Tunlamweb\VNAddressPro\Support\Requirements::met() ) {
 try {
     require_once __DIR__ . '/includes/functions.php';
     spl_autoload_register( 'vnap_autoload' );
+    if ( ! defined( 'VNAP_DB_VERSION' ) ) {
+        define( 'VNAP_DB_VERSION', \Tunlamweb\VNAddressPro\Database\SchemaManager::VERSION );
+    }
     register_activation_hook( __FILE__, array( 'Tunlamweb\VNAddressPro\Plugin', 'activate' ) );
     register_deactivation_hook( __FILE__, array( 'Tunlamweb\VNAddressPro\Plugin', 'deactivate' ) );
     \Tunlamweb\VNAddressPro\Plugin::instance()->boot();

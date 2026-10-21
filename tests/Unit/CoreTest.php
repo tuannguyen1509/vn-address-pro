@@ -12,6 +12,8 @@ use Tunlamweb\VNAddressPro\Plugin;
 use Tunlamweb\VNAddressPro\Providers\ProvinceOpenApiProvider;
 use Tunlamweb\VNAddressPro\Rest\V1\ErrorMapper;
 use Tunlamweb\VNAddressPro\Support\Search;
+use Tunlamweb\VNAddressPro\Contracts\AddressRepositoryInterface;
+use Tunlamweb\VNAddressPro\Repository\RemoteAddressRepository;
 
 defined( 'ABSPATH' ) || exit;
 if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
@@ -49,7 +51,7 @@ final class StubHttpClient extends HttpClient {
     }
 }
 
-final class StubProvider implements AddressProviderInterface {
+final class StubProvider implements AddressRepositoryInterface {
     public array|\WP_Error $provinces = array();
     public array|\WP_Error $detail = array();
 
@@ -64,6 +66,14 @@ final class StubProvider implements AddressProviderInterface {
     public function get_wards( int $province_code ): array|\WP_Error {
         return $this->detail;
     }
+
+    public function get_ward( int $ward_code ): array|\WP_Error {
+        return new \WP_Error( 'vnap_not_found', 'Fixture missing ward' );
+    }
+
+    public function has_usable_dataset(): bool {
+        return true;
+    }
 }
 
 $assert = static function ( bool $condition, string $message = 'Assertion failed' ): void {
@@ -75,6 +85,8 @@ $passed = 0;
 $failures = array();
 require_once dirname( __DIR__ ) . '/Support/CacheState.php';
 $state = new \Tunlamweb\VNAddressPro\Tests\Support\CacheState();
+require_once dirname( __DIR__ ) . '/Support/LocalState.php';
+$local_state = new \Tunlamweb\VNAddressPro\Tests\Support\LocalState();
 $test = static function ( string $name, callable $callback ) use ( &$passed, &$failures, $state ): void {
     $state->clear();
     try {
@@ -321,7 +333,7 @@ try {
     $test( 'Provider/service: unexpected 200 structure becomes mapped safe error', static function () use ( $assert, $client, $response, &$http_result, $normalizer, $validator, $search ) {
         $http_result = $response( 200, '{"name":["bad"]}' );
         $provider = new ProvinceOpenApiProvider( $client, new MemoryCache() );
-        $service = new AddressService( $provider, $normalizer, $validator, $search );
+        $service = new AddressService( new RemoteAddressRepository( $provider ), $normalizer, $validator, $search );
         $error = $service->get_provinces();
         $assert( $error->get_error_code() === 'vnap_invalid_payload' );
         $assert( ErrorMapper::map( $error )->get_error_code() === 'vn_address_invalid_json' );
@@ -373,6 +385,7 @@ try {
     restore_error_handler();
     remove_filter( 'pre_http_request', $intercept, PHP_INT_MAX );
     $state->restore();
+    $local_state->restore();
     foreach ( $saved as $key => $value ) {
         delete_transient( $key );
         if ( $value !== false ) {

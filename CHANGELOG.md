@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased — Phase 4 (development of 2.0.0)
+
+- Bundle a provenance-documented Province Open API v2 snapshot and SHA-256 manifest.
+- Add repository abstraction, indexed persistent local province/ward reads and a remote fallback adapter.
+- Preserve phone_code and original ward order for REST v1 compatibility.
+- Add independent schema/dataset versions, offline activation and automatic Phase 3 upgrade without reactivation.
+- Validate before import and atomically replace InnoDB rows/metadata, rolling back failed imports.
+- Keep ordinary lookups local without transient dependency, per-request JSON parsing or HTTP calls.
+- Add local fixture contract checks, offline/fallback/rollback/version/query-count tests and build tooling.
+- Preserve release branding, existing remote reliability, REST fixture and legacy signatures.
+
 ## Unreleased — Phase 3 (development of 2.0.0)
 
 - Validate provider and cached payloads before use; validate remote data before active/LKG writes.

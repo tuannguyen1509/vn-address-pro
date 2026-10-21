@@ -1,7 +1,7 @@
 <?php
 namespace Tunlamweb\VNAddressPro\Address;
 
-use Tunlamweb\VNAddressPro\Contracts\AddressProviderInterface;
+use Tunlamweb\VNAddressPro\Contracts\AddressRepositoryInterface;
 use Tunlamweb\VNAddressPro\Support\Search;
 
 defined( 'ABSPATH' ) || exit;
@@ -9,14 +9,14 @@ defined( 'ABSPATH' ) || exit;
 /** Application results only: no REST envelopes, HTTP URLs or cache ownership. */
 final class AddressService {
     public function __construct(
-        private AddressProviderInterface $provider,
+        private AddressRepositoryInterface $repository,
         private Normalizer $normalizer,
         private Validator $validator,
         private Search $search
     ) {}
 
     public function get_provinces( string $search = '' ): array|\WP_Error {
-        $data = $this->provider->get_provinces();
+        $data = $this->repository->get_provinces();
         if ( is_wp_error( $data ) ) {
             return $data;
         }
@@ -36,7 +36,7 @@ final class AddressService {
     }
 
     public function get_wards( int $province_code, string $search = '' ): array|\WP_Error {
-        $data = $this->provider->get_wards( $province_code );
+        $data = $this->repository->get_wards( $province_code );
         $error = $this->validate_detail( $data );
         if ( is_wp_error( $error ) ) {
             return $error;
@@ -54,7 +54,7 @@ final class AddressService {
     }
 
     public function get_province( int $province_code ): array|\WP_Error {
-        $data = $this->provider->get_province( $province_code );
+        $data = $this->repository->get_province( $province_code );
         $error = $this->validate_detail( $data );
         if ( is_wp_error( $error ) ) {
             return $error;

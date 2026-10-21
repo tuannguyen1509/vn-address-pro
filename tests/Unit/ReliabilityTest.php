@@ -87,6 +87,8 @@ $keys = Provider::runtime_keys();
 $detail_keys = Provider::runtime_keys( 1 );
 $validator = new ProvinceOpenApiValidator();
 $state = new \Tunlamweb\VNAddressPro\Tests\Support\CacheState();
+require_once dirname( __DIR__ ) . '/Support/LocalState.php';
+$local_state = new \Tunlamweb\VNAddressPro\Tests\Support\LocalState();
 $assert = static function ( bool $value, string $message = 'Assertion failed' ): void {
     if ( ! $value ) {
         throw new \RuntimeException( $message );
@@ -423,6 +425,7 @@ try {
     remove_filter( 'vnap_log_to_error_log', '__return_false' );
     remove_action( 'vnap_diagnostic', $diagnostic, 10 );
     $state->restore();
+    $local_state->restore();
 }
 if ( $failed ) {
     \WP_CLI::error( implode( "\n", $failed ) );

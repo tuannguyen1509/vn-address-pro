@@ -10,6 +10,8 @@ wp eval-file wp-content/plugins/vn-address-pro/tests/Contract/RestV1ContractTest
 wp eval-file wp-content/plugins/vn-address-pro/tests/FoundationTest.php
 wp eval-file wp-content/plugins/vn-address-pro/tests/Unit/CoreTest.php
 wp eval-file wp-content/plugins/vn-address-pro/tests/Unit/ReliabilityTest.php
+wp eval-file wp-content/plugins/vn-address-pro/tests/Integration/LocalRepositoryTest.php
+wp eval-file wp-content/plugins/vn-address-pro/tests/LocalRepositorySmokeTest.php
 wp plugin deactivate vn-address-pro
 wp plugin activate vn-address-pro
 wp eval-file wp-content/plugins/vn-address-pro/tests/FoundationTest.php
@@ -48,3 +50,15 @@ wp eval-file wp-content/plugins/vn-address-pro/tests/LiveSmokeTest.php
 ```
 
 This checks real HTTP GET requests to the current site's four REST URLs, including province code 79. It uses `rest_url()`/`add_query_arg()` and works with query-style REST URLs. Run after the offline checks, then inspect `wp-content/debug.log`. No frontend component or integration is installed by the test.
+
+## Phase 4 persistent repository checks
+
+Use a **disposable database**: LocalRepositoryTest deliberately replaces local rows with deterministic fixtures, exercises rollback and renames/restores the owned ward table, then reinstalls the shipped snapshot. Do not run it on a site with a custom/newer installed dataset. It has 40 checks, including 11 exact public response comparisons against the unchanged JSON baseline, schema/manifest/checksum validation, indexed query bounds, full offline data, fallback and failed-import preservation. No network is required. Total named checks are 102 existing + 40 local = 142, with 18 original REST comparisons reported separately.
+
+`Support/LocalState.php` temporarily removes/restores only dataset selection metadata in old remote-path tests. CoreTest's provider double now implements the repository abstraction; actual remote provider service tests use the explicit adapter. Schema/signature/search/sort/health expectations and baseline JSON remain unchanged.
+
+`LocalRepositorySmokeTest.php` clears only its named remote cache/LKG/marker resources and denies every outbound request while dispatching the four real WordPress routes. It asserts zero HTTP attempts and restores prior state. `RemoteProviderSmokeTest.php` is an optional network test of the Phase 3 provider, separate from site/local smoke.
+
+For fresh offline activation, copy `Support/BlockHttp.php` into a disposable site's `mu-plugins` directory **before activation**, reset/read its `vnap_test_http_count` option and activate VN Address Pro. Expected count: zero. Remove the test MU plugin before the normal remote mock suites: its PHP_INT_MAX HTTP blocker intentionally overrides lower-priority contract fixtures. This is test-environment isolation, not a change to public expected output. Disable unrelated WP-Cron in that disposable environment to isolate plugin requests. For actual HTTP transport, keep outbound denied in the server and call the four REST URLs from outside WordPress; all should return 200 without active/LKG cache.
+
+The shipped dataset and generated metadata must remain paired; `.gitattributes` ensures JSON LF bytes survive checkout. See [local dataset](../docs/local-dataset.md) and [Phase 4 results](../docs/phase4-validation.md).

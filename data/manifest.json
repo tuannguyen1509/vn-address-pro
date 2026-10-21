@@ -1,0 +1,11 @@
+{
+    "schema_version": 1,
+    "dataset_version": "20261021034454",
+    "source": "Province Open API v2",
+    "source_url": "https://provinces.open-api.vn/api/v2/?depth=2",
+    "source_project": "https://github.com/hongquan/vn-open-api-provinces",
+    "generated_at": "2026-10-21T03:44:54Z",
+    "province_count": 34,
+    "ward_count": 3321,
+    "checksum": "fd620c46def82960832d7c1d3587f4b17aeb197dcbe74a753adbf897ab38e32f"
+}

@@ -55,6 +55,8 @@ $vnap_keys = array( 'vn_address_provinces_v2', 'vn_address_province_1_depth2' );
 require_once dirname( __DIR__ ) . '/Support/CacheState.php';
 $vnap_state = new \Tunlamweb\VNAddressPro\Tests\Support\CacheState();
 $vnap_state->clear();
+require_once dirname( __DIR__ ) . '/Support/LocalState.php';
+$vnap_local_state = new \Tunlamweb\VNAddressPro\Tests\Support\LocalState();
 $vnap_snapshots = array();
 $vnap_failure = null;
 try {
@@ -103,6 +105,7 @@ try {
 } finally {
     remove_filter( 'pre_http_request', $vnap_http, 10 );
     $vnap_state->restore();
+    $vnap_local_state->restore();
 }
 if ( $vnap_failure !== null ) {
     WP_CLI::error( $vnap_failure );

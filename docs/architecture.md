@@ -1,6 +1,6 @@
-# Core architecture — Phase 3
+# Core architecture — Phase 4
 
-Phase 3 remains development of plugin 2.0.0. No database migration, cache reset, reactivation, provider reconfiguration or release-version bump is required. The main filename stays `vn-address-api.php`.
+Phase 4 remains development of plugin 2.0.0. The new schema/dataset versions are independent of the release. Tables/data install on activation or the existing init upgrade checkpoint; no reactivation or remote configuration is required. The main filename stays `vn-address-api.php`.
 
 ```text
 WordPress REST v1             VN_Address_API_2025 (public facade)
@@ -13,9 +13,11 @@ WordPress REST v1             VN_Address_API_2025 (public facade)
                  ├── Normalizer
                  ├── Validator
                  ├── Search
-                 └── AddressProviderInterface
+                 └── AddressRepositoryInterface
                              ↓
-                 ProvinceOpenApiProvider
+                 FallbackAddressRepository
+                      ├── LocalAddressRepository → per-site WordPress tables
+                      └── RemoteAddressRepository → ProvinceOpenApiProvider
                       ├── CacheInterface → AddressCache → Transients
                       └── HttpClient → WordPress HTTP API → Province Open API
 ```
@@ -26,7 +28,7 @@ The Phase 1 entrypoint, early PHP/WordPress requirements gate, constants and nam
 
 The existing `rest_api_init` callback identity `[VN_Address_API_2025, register_routes]` remains registered so existing `has_action()`/`remove_action()` calls continue to work. That callback delegates to the controller, which owns all route declarations. It registers at most once per REST server instance, including if the facade's registration method is called repeatedly.
 
-Textdomain loading, `vnap_version` checkpoint and lifecycle behavior remain from Phase 1. There are no new options, cron events, tables or frontend assets.
+Textdomain loading and release checkpoint remain. The checkpoint additionally runs a cheap schema/dataset version check before its unchanged-release early return. Missing/older data triggers validated bundled installation. No cron or frontend assets are introduced; data tables/options are described in [database-schema.md](database-schema.md).
 
 ## Layer responsibilities
 
@@ -36,6 +38,12 @@ Textdomain loading, `vnap_version` checkpoint and lifecycle behavior remain from
 | ErrorMapper | Map internal WP_Error codes to frozen v1 messages, statuses and error data |
 | AddressService | Normalize, filter and sort application results; check payload usability and not-found branch |
 | AddressProviderInterface | Raw province list or raw province detail/ward context; array or WP_Error |
+| AddressRepositoryInterface | Provider-compatible record reads plus get_ward and installed dataset usability |
+| LocalAddressRepository | Indexed persistent SQL reads; no HTTP, import or REST registration |
+| FallbackAddressRepository | Prefer healthy local; fallback only on unavailability, never entity not-found |
+| RemoteAddressRepository | Adapt the existing provider without changing remote semantics |
+| DatasetLoader / DatasetValidator | Local file/checksum/manifest and full canonical data validation |
+| DatasetInstaller / SchemaManager | Versioned schema and transactional, fail-safe bundled installation |
 | ProvinceOpenApiProvider | Fixed URLs, validated active/LKG state, negative/failure markers and retry coordination |
 | ProvinceOpenApiValidator | Required provider fields, unique codes and requested/returned/ward parent consistency |
 | ReliabilityPolicy | Safe TTL/attempt filters, short retry window and bounded Retry-After |
@@ -104,10 +112,12 @@ Public routes remain GET and unauthenticated. Remote URLs are fixed inside the p
 
 The facade preserves `NS`, `UPSTREAM`, `CACHE_TTL`, `init(): void`, `register_routes(): void`, and all three untyped-return public request callbacks with their original `WP_REST_Request` parameter. Constants reference the owning core classes to prevent duplicated configuration. Private legacy helpers were replaced by the dedicated components; they were not public APIs.
 
-`Plugin::instance()->address_service()` and `rest_controller()` are provisional internal accessors. Dependency construction occurs only in Plugin; tests may instantiate AddressService with another `AddressProviderInterface` and an in-memory `CacheInterface`. There is no production provider switcher or stable developer facade yet.
+`Plugin::instance()->address_service()`, `repository()` and `rest_controller()` are provisional internal accessors. Dependency construction occurs only in Plugin; tests inject another AddressRepositoryInterface, or wrap an AddressProviderInterface with RemoteAddressRepository. There is no production provider switcher or stable developer facade yet.
 
 ## Verification and deferred work
 
-The frozen baseline fixture is unchanged. The 42 existing core checks retain public assertions and update superseded cache expectations. Another 60 reliability checks cover validation/fallback/retry/locking with mocks, simulated time and actual option leases. Run instructions: [tests](../tests/README.md). Results: [Phase 3 validation](phase3-validation.md).
+The frozen fixture is unchanged. The existing 42 core and 60 reliability checks isolate local state when exercising remote behavior. New local integration checks compare the same frozen public responses using a fixture installed in the real repository, and prove offline/rollback/query bounds. Run instructions: [tests](../tests/README.md). Results: [Phase 4 validation](phase4-validation.md).
 
-Deferred: local repository/dataset, sync, versioned public schemas/error semantics, full multisite/external-cache matrix and integrations. Phase 4 has not started.
+Persistent local reads are now the normal path and never depend on the remote cache flow above. Bundled loader/import runs only when installation/upgrade requires it. See [local-dataset.md](local-dataset.md) for canonical format, source, SHA-256 and default selection. Remote reliability from Phase 3 remains unchanged for emergency fallback.
+
+Deferred: Dataset Sync & Administration, versioned public error/schema changes, full multisite/external-cache matrix and integrations. Phase 5 has not started.
