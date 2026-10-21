@@ -9,7 +9,7 @@ WordPress REST API cho địa chỉ Việt Nam hai cấp: Tỉnh/Thành phố �
 - PHP 8.1 trở lên.
 - WordPress 6.3 trở lên.
 - MySQL/MariaDB với InnoDB cho hai bảng địa chỉ và bảng options (để import/metadata rollback cùng nhau).
-- Internet không bắt buộc khi activate hoặc lookup local; chỉ cần cho remote fallback/build snapshot.
+- Internet không bắt buộc khi activate hoặc lookup local; cần cho remote fallback, kiểm tra/cập nhật dataset hoặc build snapshot.
 - mbstring không bắt buộc; nếu thiếu, tìm kiếm fallback về `stripos()` có hạn chế với chữ hoa/thường Unicode.
 
 Các hàm REST, Transients và HTTP đang dùng đã có trước WordPress 6.3; bootstrap không thêm API yêu cầu bản cao hơn. Chọn mức hỗ trợ 6.3 vì WordPress xác nhận hỗ trợ đầy đủ PHP 8.1 từ phiên bản này: [PHP 8 support clarification](https://make.wordpress.org/core/2025/04/09/php-8-support-clarification/). Đây là minimum của plugin, không phải khuyến nghị giữ WordPress cũ.
@@ -45,13 +45,13 @@ Không cần Composer hoặc bước cài dependency. Autoloader nội bộ ch�
 
 ## Development Status
 
-Phase 4 — Local Address Dataset & Repository, tiếp tục development của version 2.0.0. Class legacy `VN_Address_API_2025`, constants và toàn bộ public methods vẫn tồn tại dưới dạng facade trong `includes/legacy-api.php`; mọi xử lý delegate sang core mới.
+Phase 5 — Dataset Sync & Administration, tiếp tục development của version 2.0.0. Class legacy `VN_Address_API_2025`, constants và toàn bộ public methods vẫn tồn tại dưới dạng facade trong `includes/legacy-api.php`; mọi xử lý delegate sang core mới.
 
 Bootstrap: entrypoint → requirements → autoloader → `Plugin::instance()->boot()` → legacy registration → `vnap_loaded`. Textdomain và version check chạy trên `init`. Hook `vnap_loaded` không có arguments, fire đúng một lần sau khi class/API registration callback đã sẵn sàng; routes thực tế được đăng ký tại `rest_api_init`. Integration muốn nghe hook phải đăng ký trước khi plugin boot; plugin tải sau có thể dùng `did_action('vnap_loaded')`.
 
 Quy ước cho code mới: namespace `Tunlamweb\VNAddressPro`, PHP/options/hooks `vnap_`, CSS `.vnap-`, JavaScript `VNAddressPro`, text domain `vn-address-pro`. Chưa thêm CSS/JS runtime.
 
-Đã có persistent local dataset/repository. Chưa triển khai WooCommerce, form integrations hoặc data sync. Xem [tests](tests/README.md) và [changelog](CHANGELOG.md).
+Đã có persistent local database, offline normal lookup, manual/scheduled dataset updates, integrity validation và safe repair/recovery. Chưa triển khai WooCommerce hoặc form integrations. Xem [tests](tests/README.md) và [changelog](CHANGELOG.md).
 
 ## Architecture
 
@@ -67,8 +67,8 @@ Raw payload từ remote và cache được validate trước khi dùng. Chỉ re
 
 Refresh có lease lock trong bảng options sẵn có, negative cache ngắn cho detail HTTP 404 và failure marker cho lỗi tạm thời. Retry tối đa một lần, chỉ khi lỗi transient đầu tiên kết thúc dưới 0,5 giây và chưa có LKG. Không retry đồng bộ 429 hoặc timeout kéo dài; không sleep trong request.
 
-Remote fallback vẫn dùng cache có thể bị evict sớm; local repository là nguồn persistent độc lập. Không có cron refresh, automatic sync hoặc admin settings mới. Snapshot bundle chỉ cập nhật bằng build/release mới, không tự tải dữ liệu mới từ Internet.
+Remote fallback vẫn dùng cache có thể bị evict sớm; local repository là nguồn persistent độc lập. Settings → VN Address có bốn tab General, Data, Tools và System Status. Automatic Dataset Updates mặc định Disabled; có thể chọn Daily, Weekly hoặc Monthly (30 ngày). Sync chỉ chạy qua admin action hoặc scheduled job, không chạy trong lookup frontend. Snapshot bundle vẫn được đóng gói theo release; sync cập nhật local DB mà không sửa file bundle.
 
-TTL filters và diagnostics: [cache-reliability.md](docs/cache-reliability.md). Kết quả hiện tại: [Phase 4 validation](docs/phase4-validation.md).
+TTL filters và diagnostics: [cache-reliability.md](docs/cache-reliability.md). Vận hành: [dataset sync](docs/dataset-sync.md), [admin settings](docs/admin-settings.md). Kết quả hiện tại: [Phase 5 validation](docs/phase5-validation.md).
 
 Future Migration Recommendation: chỉ cân nhắc đổi folder/main filename khi có kế hoạch migration đã kiểm chứng bảo toàn activation identity. Phase 1 không rename.

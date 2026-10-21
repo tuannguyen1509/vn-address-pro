@@ -1,6 +1,6 @@
-# Core architecture — Phase 4
+# Core architecture — Phase 5
 
-Phase 4 remains development of plugin 2.0.0. The new schema/dataset versions are independent of the release. Tables/data install on activation or the existing init upgrade checkpoint; no reactivation or remote configuration is required. The main filename stays `vn-address-api.php`.
+Phase 5 remains development of plugin 2.0.0. Schema/dataset versions are independent of the release. Tables/data install on activation or the existing init upgrade checkpoint; no reactivation or remote configuration is required. The main filename stays `vn-address-api.php`. Sync/admin hooks register once from Plugin; no remote sync runs on frontend init.
 
 ```text
 WordPress REST v1             VN_Address_API_2025 (public facade)
@@ -43,7 +43,7 @@ Textdomain loading and release checkpoint remain. The checkpoint additionally ru
 | FallbackAddressRepository | Prefer healthy local; fallback only on unavailability, never entity not-found |
 | RemoteAddressRepository | Adapt the existing provider without changing remote semantics |
 | DatasetLoader / DatasetValidator | Local file/checksum/manifest and full canonical data validation |
-| DatasetInstaller / SchemaManager | Versioned schema and transactional, fail-safe bundled installation |
+| DatasetInstaller / SchemaManager | Versioned schema and shared transactional, fail-safe bundled/remote installation |
 | ProvinceOpenApiProvider | Fixed URLs, validated active/LKG state, negative/failure markers and retry coordination |
 | ProvinceOpenApiValidator | Required provider fields, unique codes and requested/returned/ward parent consistency |
 | ReliabilityPolicy | Safe TTL/attempt filters, short retry window and bounded Retry-After |
@@ -112,7 +112,7 @@ Public routes remain GET and unauthenticated. Remote URLs are fixed inside the p
 
 The facade preserves `NS`, `UPSTREAM`, `CACHE_TTL`, `init(): void`, `register_routes(): void`, and all three untyped-return public request callbacks with their original `WP_REST_Request` parameter. Constants reference the owning core classes to prevent duplicated configuration. Private legacy helpers were replaced by the dedicated components; they were not public APIs.
 
-`Plugin::instance()->address_service()`, `repository()` and `rest_controller()` are provisional internal accessors. Dependency construction occurs only in Plugin; tests inject another AddressRepositoryInterface, or wrap an AddressProviderInterface with RemoteAddressRepository. There is no production provider switcher or stable developer facade yet.
+`Plugin::instance()->address_service()`, `repository()` and `rest_controller()` are provisional internal accessors. The lookup graph is composed in Plugin; tests inject another AddressRepositoryInterface, or wrap an AddressProviderInterface with RemoteAddressRepository. DatasetSyncService separately accepts a DatasetProviderInterface with a default sync adapter. There is no production provider switcher or stable developer facade yet.
 
 ## Verification and deferred work
 
@@ -120,4 +120,24 @@ The frozen fixture is unchanged. The existing 42 core and 60 reliability checks 
 
 Persistent local reads are now the normal path and never depend on the remote cache flow above. Bundled loader/import runs only when installation/upgrade requires it. See [local-dataset.md](local-dataset.md) for canonical format, source, SHA-256 and default selection. Remote reliability from Phase 3 remains unchanged for emergency fallback.
 
-Deferred: Dataset Sync & Administration, versioned public error/schema changes, full multisite/external-cache matrix and integrations. Phase 5 has not started.
+## Dataset administration path
+
+```text
+SettingsPage (manage_options + action nonce) / DatasetScheduler
+                     ↓
+             DatasetSyncService
+                     ↓
+       DatasetProviderInterface (complete canonical package)
+                     ↓
+         DatasetPackage / DatasetValidator
+                     ↓
+      DatasetInstaller::install_package (shared transaction staging)
+                     ↓
+       staged content/count/relationship verification
+                     ↓
+       atomic rows + metadata COMMIT → LocalAddressRepository
+```
+
+DatasetSyncLock coordinates check/sync/repair/reinstall independently of lookup refresh leases. DatasetMetadata centralizes bounded operation state and dataset metadata. DatasetIntegrityAuditor reconstructs database content for explicit audit/repair and pre-commit verification. RemoteCacheCleaner invalidates only named active/negative/failure state, preserving LKG. SettingsPage renders native WordPress forms; no custom JS/CSS assets or public write endpoints exist. DatasetScheduler defaults disabled and runs only its registered WP-Cron job. See [sync design](dataset-sync.md), [admin UI](admin-settings.md) and [Phase 5 validation](phase5-validation.md).
+
+Deferred: reusable frontend component, versioned public error/schema changes, trusted upstream snapshot manifests, full multisite/external-cache matrix and integrations.

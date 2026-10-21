@@ -43,6 +43,8 @@ final class Plugin {
         }
         $this->rest_controller();
         Legacy::load();
+        ( new \Tunlamweb\VNAddressPro\Sync\DatasetScheduler() )->register();
+        ( new \Tunlamweb\VNAddressPro\Admin\SettingsPage() )->register();
         $this->booted = true;
         add_action( 'init', array( $this, 'load_textdomain' ), 0 );
         add_action( 'init', array( $this, 'maybe_upgrade' ), 1 );
@@ -112,9 +114,10 @@ final class Plugin {
         }
         // On multisite each site's marker is initialized lazily on its own init.
         self::instance()->maybe_upgrade();
+        ( new \Tunlamweb\VNAddressPro\Sync\DatasetScheduler() )->reconcile();
     }
 
     public static function deactivate( bool $network_wide = false ): void {
-        // No scheduled jobs or temporary resources. Preserve options/cache.
+        \Tunlamweb\VNAddressPro\Sync\DatasetScheduler::clear();
     }
 }

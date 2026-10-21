@@ -1,6 +1,6 @@
 # Bundled local address dataset
 
-Phase 4 provides a persistent WordPress database repository, not a transient cache. Once installed, ordinary lookups work with Internet blocked and all remote caches absent. No automatic remote update, cron or Sync Now UI is included.
+Phase 4 provides a persistent WordPress database repository, not a transient cache. Once installed, ordinary lookups work with Internet blocked and all remote caches absent. Phase 5 adds explicit admin/scheduled updates and recovery; these do not run from frontend lookup. See [dataset-sync.md](dataset-sync.md) and [admin-settings.md](admin-settings.md).
 
 ## Source and provenance
 
@@ -58,4 +58,4 @@ Local not-found is authoritative: it maps to the existing `vn_address_not_found`
 
 Local usability is not a full integrity audit on every request. Arbitrary manual row edits/truncations beyond the lightweight probes require controlled repair/future integrity tools. The default installer does not repeatedly reload a healthy current snapshot. InnoDB/database failure can force remote fallback, which can still fail if its caches/network are also unavailable.
 
-No data is deleted on deactivation/uninstall in this phase. Full multisite provisioning, automatic update provenance/version policies, admin status/repair and sync belong to a later phase.
+No data is deleted on deactivation/uninstall. Deactivation clears only the configured dataset sync event. Phase 5 adds admin status/repair and explicit manual or opt-in scheduled sync using this same canonical format and importer. New installations include installed_at and content_checksum metadata; existing Phase 4 installations can be audited against the verified bundle. Full multisite provisioning and authenticated upstream version/provenance remain future work.

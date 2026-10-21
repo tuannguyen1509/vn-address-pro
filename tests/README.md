@@ -62,3 +62,17 @@ Use a **disposable database**: LocalRepositoryTest deliberately replaces local r
 For fresh offline activation, copy `Support/BlockHttp.php` into a disposable site's `mu-plugins` directory **before activation**, reset/read its `vnap_test_http_count` option and activate VN Address Pro. Expected count: zero. Remove the test MU plugin before the normal remote mock suites: its PHP_INT_MAX HTTP blocker intentionally overrides lower-priority contract fixtures. This is test-environment isolation, not a change to public expected output. Disable unrelated WP-Cron in that disposable environment to isolate plugin requests. For actual HTTP transport, keep outbound denied in the server and call the four REST URLs from outside WordPress; all should return 200 without active/LKG cache.
 
 The shipped dataset and generated metadata must remain paired; `.gitattributes` ensures JSON LF bytes survive checkout. See [local dataset](../docs/local-dataset.md) and [Phase 4 results](../docs/phase4-validation.md).
+
+## Phase 5 sync and administration checks
+
+```sh
+wp eval-file wp-content/plugins/vn-address-pro/tests/Integration/DatasetSyncTest.php
+```
+
+Use a disposable database only. The suite installs deterministic local fixtures, temporarily renames owned tables, injects SQL failures, opens a second database connection for concurrent REST reads, creates/deletes a test subscriber and finally reinstalls the shipped bundle. It restores scheduling/status options. It has 65 checks with all HTTP mocked/blocked, including update/version conflict, download/schema/partial failures, failed import/verification/COMMIT, lease ownership/lost-worker rejection, audit/repair/no-downgrade, schedules/lifecycle, capability/nonces and offline lookup. Existing 18 REST comparisons and 142 core/reliability/local checks remain unchanged.
+
+For actual admin HTTP transport, copy `Support/SyncHttpFixture.php` into the disposable site's mu-plugins directory. It provides a deterministic complete source response and blocks other outgoing HTTP. Supply VNAP_TEST_URL (trailing slash), VNAP_TEST_USER and VNAP_TEST_PASSWORD in the process environment, then run `node tests/AdminHttpSmokeTest.mjs` with Node 20+. This checks login, menu/tabs, seven protected POST actions/redirects/feedback and denial of anonymous/invalid-nonce requests (30 checks). Never commit credentials. Remove the fixture before normal remote-mock suites because its highest-priority filter overrides their responses. Neither test MU fixture is loaded by production plugin code.
+
+For actual offline REST transport, install Support/BlockHttp.php as a temporary MU fixture, reset its outbound counter, run `VNAP_TEST_URL=... node tests/OfflineHttpSmokeTest.mjs`, then verify the counter stayed zero. Disable unrelated WP-Cron in this environment and remove the fixture afterwards. See [Phase 5 results](../docs/phase5-validation.md).
+
+Optional upstream availability check, never publishes: `wp eval-file wp-content/plugins/vn-address-pro/tests/RemoteDatasetSmokeTest.php`.

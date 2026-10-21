@@ -41,6 +41,15 @@ final class DatasetInstaller {
         if ( $loader === null && ( $package['manifest']['dataset_version'] !== BundledDataset::VERSION || $package['manifest']['checksum'] !== BundledDataset::CHECKSUM ) ) {
             return $this->error();
         }
+        return $this->install_package( $package, $replace );
+    }
+
+    /** Shared bundled/remote transaction pipeline. Guard runs under the transaction before any row write. */
+    public function install_package( array $package, bool $replace = false, ?callable $guard = null ): bool|\WP_Error {
+        global $wpdb;
+        if ( ! DatasetPackage::valid( $package ) ) {
+            return new \WP_Error( 'vnap_invalid_payload', __( 'The address candidate failed validation.', 'vn-address-pro' ) );
+        }
         $lock = new RefreshLock();
         $lease = $lock->acquire( 'vnap_dataset_install', 60 );
         if ( $lease === null ) {
@@ -58,6 +67,7 @@ final class DatasetInstaller {
             $this->execute( 'START TRANSACTION' ); $transaction = true;
             $owner = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name=%s FOR UPDATE", RefreshLock::key( 'vnap_dataset_install' ) ) );
             if ( $owner !== $lease ) { throw new \RuntimeException( 'dataset_lease_lost' ); }
+            if ( $guard !== null && ! $guard() ) { throw new \RuntimeException( 'dataset_sync_lease_lost' ); }
             // Read authoritative metadata after obtaining the installation lease/row lock.
             $installed = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name=%s", 'vnap_dataset_version' ) );
             if ( ! $replace && DatasetValidator::valid_version( $installed ) && strcmp( $installed, $data['dataset_version'] ) >= 0 ) {
@@ -79,6 +89,13 @@ final class DatasetInstaller {
             if ( $wpdb->last_error || (int) ( $counts['p'] ?? -1 ) !== $manifest['province_count'] || (int) ( $counts['w'] ?? -1 ) !== $manifest['ward_count'] || (int) $orphans !== 0 ) {
                 throw new \RuntimeException( 'dataset_verification' );
             }
+            $snapshot = ( new DatasetIntegrityAuditor() )->snapshot( $data['dataset_version'] );
+            if ( is_wp_error( $snapshot ) || ! ( new DatasetValidator() )->validate( $snapshot )
+                || DatasetPackage::content_checksum( $snapshot ) !== DatasetPackage::content_checksum( $data ) ) {
+                throw new \RuntimeException( 'dataset_verification' );
+            }
+            $manifest['content_checksum'] = DatasetPackage::content_checksum( $data );
+            $manifest['installed_at'] = time();
             // Metadata and rows commit together. Do not publish uncommitted values in option cache.
             foreach ( array( 'vnap_dataset_version' => $data['dataset_version'], 'vnap_dataset_metadata' => $manifest ) as $key => $value ) {
                 $this->execute( $wpdb->prepare(
@@ -89,13 +106,15 @@ final class DatasetInstaller {
             $this->execute( 'COMMIT' ); $transaction = false;
             $this->invalidate_metadata();
             delete_transient( 'vnap_dataset_install_failure' );
-            // Local reads never use remote transients. Retain validated remote LKG for emergency fallback.
-            do_action( 'vnap_dataset_installed', $manifest );
+            // Observers run after commit; an observer failure cannot undo a successful publish.
+            try { do_action( 'vnap_dataset_installed', $manifest ); }
+            catch ( \Throwable $observer_error ) { ( new Logger() )->event( 'dataset_observer_failure', array( 'classification' => 'observer' ) ); }
             return true;
         } catch ( \Throwable $error ) {
             if ( $transaction ) { $wpdb->query( 'ROLLBACK' ); }
             $this->invalidate_metadata();
-            return $this->error();
+            return $error->getMessage() === 'dataset_verification'
+                ? new \WP_Error( 'vnap_dataset_verify', __( 'The staged dataset failed verification. Existing data has been preserved.', 'vn-address-pro' ) ) : $this->error();
         } finally {
             $wpdb->suppress_errors( $old );
             $lock->release( 'vnap_dataset_install', $lease );

@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased — Phase 5 (development of 2.0.0)
+
+- Add native Settings → VN Address tabs and capability/action-nonce protected admin-post operations.
+- Add dataset provider abstraction and one-request canonical Province Open API sync adapter.
+- Add manual update checks, sync and opt-in daily/weekly/30-day scheduled updates (disabled by default).
+- Reuse the transactional importer for remote publication, verifying staged fields and content identity before commit.
+- Add an independent ownership-safe 10-minute sync lease, bounded status history and post-publish updated hook.
+- Add explicit integrity audits, safe repair and offline bundled reinstall with downgrade confirmation.
+- Clear relevant remote active/negative/failure caches while preserving last-known-good data.
+- Preserve local-first/offline lookups, public REST v1 fixture and legacy signatures.
+- Add sync, concurrency, rollback, cron, repair, authorization and admin HTTP regression coverage.
+
 ## Unreleased — Phase 4 (development of 2.0.0)
 
 - Bundle a provenance-documented Province Open API v2 snapshot and SHA-256 manifest.
