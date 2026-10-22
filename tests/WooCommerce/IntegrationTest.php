@@ -15,7 +15,7 @@ try {
     $assert( Compatibility::supported() && Compatibility::checkout_type() === 'classic', 'Conditional module supports this Woo and Classic page' );
     $features = \Automattic\WooCommerce\Utilities\FeaturesUtil::get_compatible_features_for_plugin( VNAP_BASENAME );
     $assert( in_array( 'custom_order_tables', $features['compatible'], true ), 'HPOS compatibility declared with actual plugin entrypoint' );
-    $assert( in_array( 'cart_checkout_blocks', $features['incompatible'], true ), 'Checkout Blocks explicitly not declared supported' );
+    $assert( in_array( 'cart_checkout_blocks', $features[ Compatibility::supports_blocks() ? 'compatible' : 'incompatible' ], true ), 'Checkout Blocks declaration matches supported public API capability' );
     $before = has_filter( 'woocommerce_states' ); WooCommerceIntegration::load(); $assert( has_filter( 'woocommerce_states' ) === $before, 'Integration bootstrap idempotent' );
     $provinces = Plugin::instance()->address_service()->get_provinces(); $states = WC()->countries->get_states( 'VN' );
     $assert( count( $states ) === count( $provinces ) && isset( $states['VN-79'] ), 'States come from current core dataset' );

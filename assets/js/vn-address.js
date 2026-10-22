@@ -2,7 +2,6 @@
     'use strict';
     if (window.VNAddressPro && window.VNAddressPro.init) return;
     const instances = new WeakMap();
-    const cache = new Map(); // Successful responses only; page lifetime, never persistent storage.
     const config = window.VNAddressProConfig || {};
     const strings = config.strings || {};
     const selector = '[data-vnap-address]';
@@ -104,31 +103,10 @@
             this.announce(strings.loading);
             emit(this.container, 'wards-loading', { provinceCode: chosen });
             if (this.destroyed || current !== this.sequence) return false;
-            let timeout;
             try {
-                const url = new URL(config.wardsUrl, window.location.href);
-                if (url.origin !== window.location.origin || !/^https?:$/.test(url.protocol) || url.username || url.password) throw new Error('invalid-url');
-                url.searchParams.set('province_code', chosen);
-                const key = url.href;
-                let rows = cache.get(key);
-                if (!rows) {
-                    const controller = new AbortController();
-                    this.controller = controller;
-                    timeout = window.setTimeout(() => controller.abort(), 20000);
-                    const response = await window.fetch(url.href, { signal: controller.signal, credentials: 'same-origin', headers: { Accept: 'application/json' } });
-                    if (!response.ok) throw new Error('request');
-                    const result = await response.json();
-                    if (!result || result.success !== true || !result.province || code(result.province.code) !== chosen || !Array.isArray(result.data) || result.count !== result.data.length) throw new Error('schema');
-                    const seen = new Set();
-                    rows = result.data.map(row => {
-                        if (!row || !code(row.code) || code(row.province_code) !== chosen || typeof row.name !== 'string' || !row.name.trim() || seen.has(code(row.code))) throw new Error('schema');
-                        seen.add(code(row.code));
-                        return Object.freeze({ code: code(row.code), name: row.name });
-                    });
-                    // Aborted/obsolete responses do not seed even the shared cache.
-                    if (this.destroyed || current !== this.sequence || controller.signal.aborted) return false;
-                    cache.set(key, Object.freeze(rows));
-                }
+                const controller = new AbortController();
+                this.controller = controller;
+                const rows = await window.VNAddressProData.getWards(chosen, { signal: controller.signal });
                 if (this.destroyed || current !== this.sequence) return false;
                 this.wards = rows;
                 this.loadedProvince = chosen;
@@ -147,7 +125,6 @@
                 }
                 return false;
             } finally {
-                if (timeout) window.clearTimeout(timeout);
                 if (!this.destroyed && current === this.sequence) {
                     this.controller = null;
                     this.container.removeAttribute('aria-busy');

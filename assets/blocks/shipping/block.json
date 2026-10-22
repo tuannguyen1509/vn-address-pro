@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "vn-address-pro/shipping-ward",
+  "title": "Phường / Xã giao hàng",
+  "category": "woocommerce",
+  "parent": ["woocommerce/checkout-shipping-address-block"],
+  "textdomain": "vn-address-pro",
+  "attributes": {"lock": {"type": "object", "default": {"remove": true, "move": true}}},
+  "supports": {"html": false, "multiple": false, "inserter": false}
+}

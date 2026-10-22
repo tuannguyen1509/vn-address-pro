@@ -25,7 +25,7 @@ Feedback after successful recovery identifies the selected source. No Delete All
 
 Shows WordPress/PHP/plugin/schema/dataset versions, local availability, source/counts, last operation, recurrence/next scheduled execution, WP-Cron configuration, persistent object-cache presence and current engines for the two address tables plus options. Missing/non-InnoDB tables show Needs Repair. It does not alter engines.
 
-Phase 7 also shows WooCommerce version/detection, supported/inactive integration state, configured checkout type, HPOS mode and unsupported Checkout Blocks status. No WooCommerce settings tab/toggle or global admin notice is added.
+WooCommerce status shows version/detection, supported/inactive integration state, configured checkout type and HPOS mode. Phase 8 reports Block support according to the optional module's capability; the supported compatibility declaration is enabled only after its acceptance tests pass. No WooCommerce settings tab/toggle or global admin notice is added.
 
 Operation times use the site's WordPress timezone. Snapshot generated_at is explicitly labeled UTC. Admin notices are capability restricted; frontend visitors receive no administrative debug information.
 

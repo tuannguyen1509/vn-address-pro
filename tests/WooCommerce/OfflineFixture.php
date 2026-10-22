@@ -12,7 +12,7 @@ add_action( 'template_redirect', static function () {
     $order = wc_get_order( absint( $_GET['vnap_test_report'] ) );
     if ( ! $order || ! hash_equals( $order->get_order_key(), wp_unslash( $_GET['key'] ) ) ) { status_header( 403 ); exit; }
     $customer = $order->get_customer_id() ? new WC_Customer( $order->get_customer_id() ) : null;
-    wp_send_json( array( 'billing_state' => $order->get_billing_state(), 'billing_city' => $order->get_billing_city(), 'shipping_city' => $order->get_shipping_city(), 'billing_code' => $order->get_meta( '_vnap_billing_ward_code' ), 'shipping_code' => $order->get_meta( '_vnap_shipping_ward_code' ), 'customer_id' => $order->get_customer_id(), 'customer_code' => $customer ? $customer->get_meta( '_vnap_billing_ward_code' ) : '', 'formatted' => $order->get_formatted_billing_address(), 'payment' => $order->get_payment_method() ) );
+    wp_send_json( array( 'billing_state' => $order->get_billing_state(), 'shipping_state' => $order->get_shipping_state(), 'billing_province' => $order->get_meta( '_vnap_billing_province_code' ), 'shipping_province' => $order->get_meta( '_vnap_shipping_province_code' ), 'billing_city' => $order->get_billing_city(), 'shipping_city' => $order->get_shipping_city(), 'billing_code' => $order->get_meta( '_vnap_billing_ward_code' ), 'shipping_code' => $order->get_meta( '_vnap_shipping_ward_code' ), 'customer_id' => $order->get_customer_id(), 'customer_code' => $customer ? $customer->get_meta( '_vnap_billing_ward_code' ) : '', 'formatted' => $order->get_formatted_billing_address(), 'payment' => $order->get_payment_method() ) );
 } );
 add_filter( 'woocommerce_available_payment_gateways', static function ( $gateways ) {
     if ( isset( $gateways['cod'] ) ) {

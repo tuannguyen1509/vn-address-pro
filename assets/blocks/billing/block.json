@@ -1,0 +1,10 @@
+{
+  "apiVersion": 3,
+  "name": "vn-address-pro/billing-ward",
+  "title": "Phường / Xã thanh toán",
+  "category": "woocommerce",
+  "parent": ["woocommerce/checkout-billing-address-block"],
+  "textdomain": "vn-address-pro",
+  "attributes": {"lock": {"type": "object", "default": {"remove": true, "move": true}}},
+  "supports": {"html": false, "multiple": false, "inserter": false}
+}

@@ -13,6 +13,7 @@ final class WooCommerceIntegration {
         ( new CustomerAddress() )->register();
         ( new OrderAddress() )->register();
         ( new Assets() )->register();
+        if ( Compatibility::supports_blocks() ) { Blocks\BlocksIntegration::register(); }
         add_action( 'before_woocommerce_init', array( Compatibility::class, 'declare' ) );
     }
 }

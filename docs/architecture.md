@@ -166,6 +166,20 @@ Plugin → plugins_loaded → supported WooCommerce?
                   └─ Assets → thin Classic event adapter → Phase 6 JS
 ```
 
-Core services do not call Woo APIs. Checkout integration skips REST/Blocks/unknown checkout pages; states and historical order formatting are Woo core concerns. The existing native fields and Woo AJAX events remain authoritative. Canonical validation is reused, not reimplemented, and there is no provider HTTP/data sync code in the module. See [Woo integration](woocommerce.md), [persistent state identifiers](woocommerce-state-codes.md) and [Phase 7 validation](phase7-validation.md).
+Core services do not call Woo APIs. The Classic adapter skips REST/Blocks/unknown checkout pages; states and historical order formatting are Woo core concerns. The existing native fields and Woo AJAX events remain authoritative. Canonical validation is reused, not reimplemented, and there is no provider HTTP/data sync code in the module. See [Woo integration](woocommerce.md), [persistent state identifiers](woocommerce-state-codes.md) and [Phase 7 validation](phase7-validation.md).
 
-Deferred: Checkout Block/Store API, My Account/order-editor enhancements, form adapters, legacy migration, trusted upstream snapshot manifests and the full multisite/external-cache matrix.
+Phase 8 adds a separate path:
+
+```text
+BlocksIntegration → IntegrationInterface registry → forced address children
+                               ↓
+React → public cart/checkout/validation stores → native Store API
+  ↓                                      ↓
+shared AddressDataClient              StoreApi → existing AddressValidator
+  ↓                                      ↓
+same-site VN REST/local core          existing OrderAddress / CustomerAddress → CRUD
+```
+
+No React runtime is bundled; the browser script uses platform externals directly. The vanilla and React renderers share data fetching/cache while retaining their own lifecycle guards. Store API preserves raw state identifiers before Woo sanitization, validates before payment and handles metadata after guest-to-account creation. City hiding is scoped to VN Block checkout/Store API, not My Account. See [Blocks](woocommerce-blocks.md), [Store API contract](store-api-integration.md) and [Phase 8 validation](phase8-validation.md).
+
+Deferred: My Account/order-editor enhancements, form adapters, legacy migration, trusted upstream snapshot manifests and the full multisite/external-cache matrix.

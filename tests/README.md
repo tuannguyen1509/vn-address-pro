@@ -120,3 +120,31 @@ node /path/to/plugin/tests/WooCommerce/HttpCheckoutTest.mjs
 BrowserTest exercises real Classic fields, state/ward changes, shipping toggles/zones, AJAX and replaced address fragments, VN↔US, malicious submissions, failed payment/retry and successful guest checkout. HttpCheckoutTest exercises create-account BACS, logged-in COD and foreign BACS orders and reads authoritative order/customer metadata through the test report. Orders/accounts remain only in the disposable database for inspection; do not run against production. No gateway is altered by production code.
 
 With Woo deactivated, run `WooCommerce/AbsentTest.php` plus the full existing core suites; the absent runner also simulates an unsupported WC version in its own process. Remove the offline MU fixture before ordinary provider mock suites. No public REST baseline is regenerated. See [Phase 7 results](../docs/phase7-validation.md).
+
+## Phase 8 Blocks and Store API
+
+Keep using a disposable database. Run the Phase 7 Setup once to configure synthetic product/zones/tax, then run `WooCommerce/Blocks/Setup.php` to install a standard Checkout Block page without extension child markup and create a virtual product. Production never edits checkout content. Read `vnap_test_product_id` and `vnap_test_virtual_product_id` for environment values; repeating the Phase 7 Setup creates new product/method IDs.
+
+```sh
+wp eval-file wp-content/plugins/vn-address-pro/tests/WooCommerce/Blocks/Setup.php
+wp eval-file wp-content/plugins/vn-address-pro/tests/WooCommerce/Blocks/IntegrationTest.php
+```
+
+The Block PHP runner has 23 checks covering native/foreign locale scope, forced registration, strict identifiers/relations, raw REST sanitizer protection, CRUD, guest-to-account metadata timing, virtual carts, saved selections, offline operation and actual renderer detection without page rewriting. Run with HPOS on/off; synchronize with Woo's official CLI before changing storage modes, as in Phase 7.
+
+Install both `WooCommerce/OfflineFixture.php` and `WooCommerce/Blocks/OfflineFixture.php` as separate temporary MU fixtures. The first blocks outgoing HTTP/intercepts mail and provides the order-key-protected report; the second supplies a deliberate Store API payment failure and an inert express-presence button registered through Woo's public payment registry. It never processes a real express payment. Never install either fixture on production.
+
+From the external temporary Playwright directory, set VNAP_TEST_URL, VNAP_TEST_PRODUCT and VNAP_TEST_VIRTUAL_PRODUCT. Set VNAP_CHECKOUT_URL for subdirectory/index.php permalinks. Run:
+
+```sh
+node /path/to/plugin/tests/WooCommerce/Blocks/BrowserTest.mjs
+node /path/to/plugin/tests/WooCommerce/Blocks/StoreApiTest.mjs
+```
+
+BrowserTest passes 29 checks: automatic fields, native state/VN locale, independent and same-address workflows, international transitions, actual guest BACS/create-account COD/payment failure/retry, registered-customer persistence/reload/cards, deliberately obsolete fetch responses, final server state, historical order preservation, virtual orders, express presence, offline lookup and clean console. A short test-only wait permits Woo's native debounced form/payment changes to settle before submit. Production uses no polling/delays. Only the intentional native payment 400/402 resource message is excluded from unexpected console errors, and its exact fixture error is asserted separately.
+
+StoreApiTest has 23 real HTTP checks using native Nonce/Cart Token authentication: missing/unknown/mismatched/malformed codes, strict raw state labels, unknown extension keys, shipping zones/taxes, valid canonical BACS/COD orders, foreign checkout without VN codes, and all four independent order codes. Its API fixture report is test-only. No public VN REST expected schema is changed.
+
+Existing tests updated: RenderTest now checks the shared internal data dependency and reads localized config from that handle. Generic HTML names, VNAddressPro methods/events and all REST fixtures remain unchanged. The Phase 7 compatibility-declaration assertion follows the newly supported Block capability; its Classic behavior assertions remain intact. The shared order report adds shipping state/province-code observations without changing production routes.
+
+Run the existing 41-check frontend browser suite and 30-check admin HTTP suite too. Remove the offline MU fixtures before remote-mock/contract tests; the highest-priority blocker otherwise overrides their mocks. RequirementsTest is standalone (`php tests/RequirementsTest.php`), not a wp eval-file script. See [Phase 8 report](../docs/phase8-validation.md) for the tested runtime/datastore matrix and harness corrections.

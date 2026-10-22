@@ -4,11 +4,11 @@ defined( 'ABSPATH' ) || exit;
 
 final class Assets {
     public const HANDLE = 'vnap-address';
-    public static function enqueue(): void {
-        if ( is_admin() ) { return; }
+    public static function register(): void {
         if ( ! wp_script_is( self::HANDLE, 'registered' ) ) {
-            wp_register_script( self::HANDLE, VNAP_URL . 'assets/js/vn-address.js', array(), VNAP_VERSION, true );
-            wp_localize_script( self::HANDLE, 'VNAddressProConfig', array(
+            wp_register_script( 'vnap-address-data', VNAP_URL . 'assets/js/address-data-client.js', array(), VNAP_VERSION, true );
+            wp_register_script( self::HANDLE, VNAP_URL . 'assets/js/vn-address.js', array( 'vnap-address-data' ), VNAP_VERSION, true );
+            wp_localize_script( 'vnap-address-data', 'VNAddressProConfig', array(
                 'wardsUrl' => rest_url( 'vn-address/v1/wards' ),
                 'strings' => array(
                     'loading' => __( 'Đang tải danh sách Phường / Xã...', 'vn-address-pro' ),
@@ -22,6 +22,10 @@ final class Assets {
                 ),
             ) );
         }
+    }
+    public static function enqueue(): void {
+        if ( is_admin() ) { return; }
+        self::register();
         wp_enqueue_script( self::HANDLE );
         wp_enqueue_style( self::HANDLE, VNAP_URL . 'assets/css/vn-address.css', array(), VNAP_VERSION );
     }

@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased — Phase 8 (development of 2.0.0)
+
+- Add automatic province-dependent billing/shipping ward blocks through official Woo checkout registration and IntegrationInterface.
+- Add namespaced Store API extension schema, strict raw-state/ward validation and canonical address persistence before payment.
+- Preserve Phase 7 order/customer metadata, historical formatting and native state identifiers across both checkout types.
+- Persist canonical codes for accounts created during Block checkout, including payment retry.
+- Extract a shared same-origin ward data client for vanilla and React consumers, retaining cancellation, schema checks and page-local cache.
+- Handle independent addresses, same-address mode, saved-address hydration, country switches, request races and billing-only virtual carts.
+- Add offline Block browser, direct Store API, express-presence and CRUD regression coverage.
+- Declare Cart/Checkout Blocks compatibility when supported public APIs are available, after the Block and Classic acceptance suites passed.
+
 ## Unreleased — Phase 7 (development of 2.0.0)
 
 - Add an optional WooCommerce 8.2+ module and dynamic Vietnam province states with a stable VN-{code} contract.

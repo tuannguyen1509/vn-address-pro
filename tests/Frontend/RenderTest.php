@@ -18,8 +18,8 @@ try {
     $assert( str_contains( $html, 'name="vnap_address"' ) && str_contains( $html, 'data-vnap-address-line' ), 'Optional address shown by default' );
     $assert( preg_match( '/<select[^>]*data-vnap-ward[^>]*disabled/', $html ) === 1, 'Ward starts disabled with placeholder only' );
     $assert( wp_script_is( Assets::HANDLE, 'enqueued' ) && wp_style_is( Assets::HANDLE, 'enqueued' ), 'Render enqueues script and CSS' );
-    $assert( wp_scripts()->registered[ Assets::HANDLE ]->deps === array() && wp_scripts()->registered[ Assets::HANDLE ]->ver === VNAP_VERSION, 'No jQuery dependency; release cache version' );
-    preg_match( '/=\s*(\{.*\});/s', wp_scripts()->get_data( Assets::HANDLE, 'data' ), $config_match );
+    $assert( wp_scripts()->registered[ Assets::HANDLE ]->deps === array( 'vnap-address-data' ) && wp_scripts()->registered[ Assets::HANDLE ]->ver === VNAP_VERSION, 'Shared data client without jQuery; release cache version' );
+    preg_match( '/=\s*(\{.*\});/s', wp_scripts()->get_data( 'vnap-address-data', 'data' ), $config_match );
     $localized = json_decode( $config_match[1] ?? '', true );
     $assert( ( $localized['wardsUrl'] ?? '' ) === rest_url( 'vn-address/v1/wards' ) && ! isset( $localized['nonce'] ), 'Config uses existing REST URL and no public GET nonce' );
     $assert( ! str_contains( $html, '<script' ) && strlen( $html ) < 30000, 'HTML contains no embedded full ward dataset' );
