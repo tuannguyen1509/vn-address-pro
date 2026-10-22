@@ -45,7 +45,7 @@ Không cần Composer hoặc bước cài dependency. Autoloader nội bộ ch�
 
 ## Development Status
 
-Phase 11 — Form Integration Foundation + Contact Form 7, tiếp tục development của version 2.0.0. Class legacy `VN_Address_API_2025`, constants và toàn bộ public methods vẫn tồn tại dưới dạng facade trong `includes/legacy-api.php`; mọi xử lý delegate sang core mới.
+Phase 12 — Fluent Forms Address Adapter, tiếp tục development của version 2.0.0. Class legacy `VN_Address_API_2025`, constants và toàn bộ public methods vẫn tồn tại dưới dạng facade trong `includes/legacy-api.php`; mọi xử lý delegate sang core mới.
 
 Bootstrap: entrypoint → requirements → autoloader → `Plugin::instance()->boot()` → legacy registration → `vnap_loaded`. Textdomain và version check chạy trên `init`. Hook `vnap_loaded` không có arguments, fire đúng một lần sau khi class/API registration callback đã sẵn sàng; routes thực tế được đăng ký tại `rest_api_init`. Integration muốn nghe hook phải đăng ký trước khi plugin boot; plugin tải sau có thể dùng `did_action('vnap_loaded')`.
 
@@ -99,6 +99,6 @@ Future Migration Recommendation: chỉ cân nhắc đổi folder/main filename k
 
 Settings → VN Address → Migration provides bounded customer/order analysis, signed dry-run preview and explicit selected apply. Default: Customers, HIGH only; historical orders receive code enrichment only. No migration runs automatically. Supported Woo is optional; core remains independent. Read [normalization](docs/address-normalization.md), [safety, retention and workflow](docs/legacy-migration.md) and [validation](docs/phase10-validation.md). Rollback data foundation is included; rollback execution, manual resolution, export and historical crosswalks are deferred.
 
-## Form integration (Phase 11)
+## Form integrations (Phases 11–12)
 
-Contact Form 7 now has dependent Province/Ward tags, optional street fields, server-side relationship validation and readable mail values. The reusable adapter registry remains independent of form builders; CF7 is optional. Minimum API tested: CF7 5.8.1; latest tested: 6.2.3, with its own WP/PHP requirements. Other form adapters are planned, not implemented. See [form architecture](docs/form-integrations.md), [CF7 syntax/examples](docs/contact-form-7.md) and [validation](docs/phase11-validation.md).
+Contact Form 7 and Fluent Forms provide dependent Province/Ward fields, server-side relationship validation and readable notification values while keeping canonical codes. Both are optional. CF7 tested: 5.8.1–6.2.3. Fluent Forms tested: 6.2.0–6.2.16; its adapter requires WordPress 6.4+ and uses native builder fields, entry formatting and SmartCodes. Use Fluent's native Simple Text for an optional street line. See [form architecture](docs/form-integrations.md), [CF7](docs/contact-form-7.md), [Fluent Forms setup and limits](docs/fluent-forms.md) and [Phase 12 validation](docs/phase12-validation.md). WPForms, Elementor Forms and Gravity Forms remain planned.

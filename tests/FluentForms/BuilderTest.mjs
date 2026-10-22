@@ -1,0 +1,37 @@
+import {createRequire} from 'node:module';
+const require = createRequire(process.cwd() + '/package.json'), {chromium} = require('playwright');
+const base = process.env.VNAP_TEST_URL, id = process.env.VNAP_TEST_FORM;
+let checks = 0;
+const check = (ok, label) => {if (!ok) throw new Error(label); checks++; console.log('PASS ' + label);};
+const browser = await chromium.launch({headless:true});
+try {
+    const page = await browser.newPage(); const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.goto(new URL('wp-login.php',base).href);
+    await page.locator('#user_login').fill(process.env.VNAP_TEST_USER);
+    await page.locator('#user_pass').fill(process.env.VNAP_TEST_PASSWORD);
+    await Promise.all([page.waitForNavigation(), page.locator('#wp-submit').click()]);
+    const editor = new URL(`wp-admin/admin.php?page=fluent_forms&form_id=${id}&route=editor`,base).href;
+    await page.goto(editor);
+    await page.locator('.js-editor-item').first().waitFor();
+    const before = await page.locator('.js-editor-item').count();
+    await page.getByText('Advanced Fields',{exact:true}).click();
+    await page.getByText('VN Province',{exact:true}).click();
+    await page.getByText('VN Ward',{exact:true}).click();
+    check(await page.locator('.js-editor-item').count() === before + 2, 'Native builder adds Province and Ward');
+    const last = page.locator('.js-editor-item').last();
+    await last.hover(); await last.locator('.item-actions-wrapper').dispatchEvent('click');
+    const reference = page.locator('.el-form-item').filter({has:page.locator('label').filter({hasText:/^\s*Province Field\s*$/})}).locator('input');
+    await reference.fill('vnap_province'); await reference.press('Tab');
+    check(await reference.inputValue() === 'vnap_province', 'Official custom setting accepts deterministic field name');
+    await page.getByRole('button',{name:/Save Form/}).click();
+    await page.waitForFunction(() => document.body.innerText.includes('successfully') || document.body.innerText.includes('success'));
+    await page.reload(); await page.locator('.js-editor-item').first().waitFor();
+    check(await page.locator('.js-editor-item').count() === before + 2, 'Native form save/reload preserves custom fields');
+    const reloaded = page.locator('.js-editor-item').last();
+    await reloaded.hover(); await reloaded.locator('.item-actions-wrapper').dispatchEvent('click');
+    check(await reference.inputValue() === 'vnap_province', 'Province reference persists after editor reload');
+    check(await page.locator('script[src*="assets/js/fluent-forms.js"]').count() === 0, 'No frontend adapter loaded in builder');
+    check(errors.length === 0, 'Native builder has no JavaScript exceptions');
+    console.log(`Success: ${checks} native Fluent builder checks passed.`);
+} finally {await browser.close();}

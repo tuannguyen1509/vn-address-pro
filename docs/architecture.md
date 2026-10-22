@@ -1,4 +1,4 @@
-# Core architecture — Phase 11
+# Core architecture — Phase 12
 
 Phase 5 remains development of plugin 2.0.0. Schema/dataset versions are independent of the release. Tables/data install on activation or the existing init upgrade checkpoint; no reactivation or remote configuration is required. The main filename stays `vn-address-api.php`. Sync/admin hooks register once from Plugin; no remote sync runs on frontend init.
 
@@ -193,3 +193,7 @@ SettingsPage load hook → MigrationPage capability/nonce preflight → Migratio
 ## Form integration path (Phase 11)
 
 Plugin plugins_loaded → FormIntegrationRegistry → available FormAdapterInterface implementations → ContactForm7 adapter → native tags/render/validation/mail. AddressFieldConfig and AddressSubmission remain builder-neutral; existing AddressService resolves code relationships. Shared bindFields extends AddressField additively for native builder markup, reusing AddressDataClient and lifecycle/race/reset handling. Only the thin CF7 discovery adapter is new; no second provider/cache/validation engine. Details: [form foundation](form-integrations.md).
+
+## Fluent Forms path (Phase 12)
+
+The registry additionally registers `fluent-forms`. Centralized detection/version checks keep vendor-derived classes unloaded when unsupported. Bootstrap registers validation/formatting hooks once, then creates two AddressSelect field-manager instances on init (avoiding early translation). BaseFieldManager supplies the Advanced Fields catalog, native editor settings/templates, input types and conditional support. Configuration inspects raw form JSON to catch duplicate/missing field references before the vendor's keyed parser can collapse them. Validator consumes Fluent's active essential fields and delegates pair validation to AddressService. Formatter uses existing repository/service lookups for display only; Fluent owns raw entry storage and native `.value` SmartCodes. Thin frontend discovery binds explicit native controls within each Fluent form; AddressField/DataClient retain cache/reset/race ownership. No core provider, dataset, migration or Woo behavior changes. See [adapter contract](fluent-forms.md).

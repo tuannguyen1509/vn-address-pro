@@ -66,6 +66,7 @@ final class Plugin {
         if ( $this->forms === null ) {
             $this->forms = new \Tunlamweb\VNAddressPro\Integrations\Forms\FormIntegrationRegistry();
             $this->forms->register( new \Tunlamweb\VNAddressPro\Integrations\Forms\ContactForm7\ContactForm7Integration() );
+            $this->forms->register( new \Tunlamweb\VNAddressPro\Integrations\Forms\FluentForms\FluentFormsIntegration() );
             do_action( 'vnap_form_adapters', $this->forms );
         }
         return $this->forms;

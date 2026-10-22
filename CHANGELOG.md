@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.0 — Unreleased (Phase 12)
+
+- Add optional Fluent Forms adapter with native Province and dependent Ward builder fields.
+- Keep canonical entry codes and resolve readable entry/notification values through native formatters and SmartCodes.
+- Reuse AddressService validation and the shared frontend client, race protection and reset lifecycle.
+- Respect native inactive-field validation and report detected Fluent version/availability in System Status.
+- Add native builder, submission, entry/mail, offline, tampering and coexistence tests and documentation.
+
 ## Unreleased — Phase 11 (development of 2.0.0)
 
 - Add a conditional reusable form adapter registry and builder-neutral field/submission contracts.

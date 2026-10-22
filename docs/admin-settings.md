@@ -40,3 +40,5 @@ Available only with supported Woo and both manage_options/manage_woocommerce. Sc
 ## Form integrations (Phase 11)
 
 System Status appends registry entries, including contact-form-7, as Active or Absent/unsupported. CF7 is detected through APIs/version, never required for core/admin/Woo/migration. No global form setting, new menu, submission database or global notice. The CF7 editor receives only its native VN Province/Ward/Address-line tag generators (v2 on current CF7; native v1 on the minimum tested version). No frontend adapter assets enqueue in wp-admin. Configuration comes from form tags; see [CF7 contract](contact-form-7.md).
+
+Phase 12 adds `fluent-forms`, detected version and Active / Unsupported / Not installed status. Availability checks Fluent Forms 6.2.0+, WordPress 6.4+ and native parser/field APIs. Both adapters can be Active simultaneously. Configuration stays in Fluent's own builder, with no new global settings/menu or builder JavaScript. See [Fluent Forms](fluent-forms.md).

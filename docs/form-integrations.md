@@ -1,12 +1,14 @@
 # Reusable form integration foundation
 
-VN Address Pro 2.0.0 (Unreleased) keeps forms optional. `Integrations\Forms` contains no form-plugin classes, global input reads, HTTP implementation or submission database. Contact Form 7 is the first reference adapter. Elementor, Fluent Forms, WPForms and Gravity Forms adapters are not implemented.
+VN Address Pro 2.0.0 (Unreleased) keeps forms optional. Shared contracts/registry contain no vendor dependency, global input reads, HTTP implementation or submission database. Contact Form 7 and Fluent Forms are implemented in separate optional adapter modules. Elementor, WPForms and Gravity Forms are not implemented. See [Fluent Forms](fluent-forms.md) for native fields, version requirements and entry/notification behavior.
 
 ## Registry and availability
 
 Plugin's composition root registers the built-in adapter, fires `vnap_form_adapters` with the `FormIntegrationRegistry`, then boots available adapters at `plugins_loaded` priority 20. `register(FormAdapterInterface)` rejects duplicate/invalid IDs. `boot_available()` boots each available adapter once. Availability is checked through actual API functions/classes/version, not folder names. Interface: `get_id(): string`, `is_available(): bool`, `boot(): void`. Adapter methods must be lightweight and avoid early translated labels or side effects when unavailable.
 
 Future adapters can register with `add_action('vnap_form_adapters', function ($registry) { $registry->register(new Adapter()); });`. Register the listener while plugins load, before priority 20. No filesystem scanning or framework is required. System Status lists adapter availability/boot state. No global form settings or dependency is added.
+
+Phase 12 optionally reads a public `status_details(): array` method for additive `detected` (boolean) and `version` (string) metadata. Existing adapters need no new method; required interface signatures and existing available/booted keys stay unchanged.
 
 ## Shared field and validation contract
 

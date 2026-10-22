@@ -124,6 +124,10 @@ final class SettingsPage {
                 $rows += \Tunlamweb\VNAddressPro\Integrations\WooCommerce\Compatibility::status();
                 foreach ( \Tunlamweb\VNAddressPro\Plugin::instance()->forms()->status() as $adapter => $status ) {
                     $rows[ __( 'Form integration:', 'vn-address-pro' ) . ' ' . $adapter ] = $status['booted'] ? __( 'Active', 'vn-address-pro' ) : __( 'Absent or unsupported', 'vn-address-pro' );
+                    if ( array_key_exists( 'detected', $status ) ) {
+                        $rows[ __( 'Form integration:', 'vn-address-pro' ) . ' ' . $adapter ] = $status['booted'] ? __( 'Active', 'vn-address-pro' ) : ( $status['detected'] ? __( 'Unsupported', 'vn-address-pro' ) : __( 'Not installed', 'vn-address-pro' ) );
+                        $rows[ $adapter . ' ' . __( 'Version', 'vn-address-pro' ) ] = ( $status['version'] ?? '' ) ?: '—';
+                    }
                 }
                 $rows[ __( 'Migration module', 'vn-address-pro' ) ] = \Tunlamweb\VNAddressPro\Integrations\WooCommerce\Compatibility::supported() ? __( 'Available — explicit preview/apply only', 'vn-address-pro' ) : __( 'Requires supported WooCommerce', 'vn-address-pro' );
                 $rows += array(

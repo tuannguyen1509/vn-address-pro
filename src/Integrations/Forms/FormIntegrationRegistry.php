@@ -19,7 +19,10 @@ final class FormIntegrationRegistry {
     }
     public function status(): array {
         $status = array();
-        foreach ( $this->adapters as $id => $adapter ) { $status[$id] = array( 'available' => $adapter->is_available(), 'booted' => isset( $this->booted[$id] ) ); }
+        foreach ( $this->adapters as $id => $adapter ) {
+            $status[$id] = array( 'available' => $adapter->is_available(), 'booted' => isset( $this->booted[$id] ) );
+            if ( is_callable( array( $adapter, 'status_details' ) ) ) { $status[$id] += $adapter->status_details(); }
+        }
         return $status;
     }
 }
