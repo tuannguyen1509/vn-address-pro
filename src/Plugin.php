@@ -26,6 +26,7 @@ final class Plugin {
     private ?AddressService $address_service = null;
     private ?AddressController $rest_controller = null;
     private ?AddressRepositoryInterface $repository = null;
+    private ?\Tunlamweb\VNAddressPro\Integrations\Forms\FormIntegrationRegistry $forms = null;
 
     private function __construct() {}
     private function __clone() {}
@@ -47,6 +48,7 @@ final class Plugin {
         ( new \Tunlamweb\VNAddressPro\Admin\SettingsPage() )->register();
         add_action( 'init', array( new \Tunlamweb\VNAddressPro\Frontend\Shortcode(), 'register' ) );
         add_action( 'plugins_loaded', array( \Tunlamweb\VNAddressPro\Integrations\WooCommerce\WooCommerceIntegration::class, 'load' ), 20 );
+        add_action( 'plugins_loaded', array( $this, 'load_forms' ), 20 );
         $this->booted = true;
         add_action( 'init', array( $this, 'load_textdomain' ), 0 );
         add_action( 'init', array( $this, 'maybe_upgrade' ), 1 );
@@ -59,6 +61,16 @@ final class Plugin {
     public function load_textdomain(): void {
         load_plugin_textdomain( 'vn-address-pro', false, dirname( VNAP_BASENAME ) . '/languages' );
     }
+
+    public function forms(): \Tunlamweb\VNAddressPro\Integrations\Forms\FormIntegrationRegistry {
+        if ( $this->forms === null ) {
+            $this->forms = new \Tunlamweb\VNAddressPro\Integrations\Forms\FormIntegrationRegistry();
+            $this->forms->register( new \Tunlamweb\VNAddressPro\Integrations\Forms\ContactForm7\ContactForm7Integration() );
+            do_action( 'vnap_form_adapters', $this->forms );
+        }
+        return $this->forms;
+    }
+    public function load_forms(): void { $this->forms()->boot_available(); }
 
     /** Internal, provisional API; the stable developer facade is a later phase. */
     public function address_service(): AddressService {

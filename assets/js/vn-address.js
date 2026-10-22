@@ -12,12 +12,12 @@
     }
 
     class AddressField {
-        constructor(container) {
+        constructor(container, controls = null) {
             this.container = container;
-            this.province = container.querySelector('[data-vnap-province]');
-            this.ward = container.querySelector('[data-vnap-ward]');
-            this.provinceName = container.querySelector('[data-vnap-province-name]');
-            this.wardName = container.querySelector('[data-vnap-ward-name]');
+            this.province = controls ? controls.province : container.querySelector('[data-vnap-province]');
+            this.ward = controls ? controls.ward : container.querySelector('[data-vnap-ward]');
+            this.provinceName = controls ? controls.provinceName : container.querySelector('[data-vnap-province-name]');
+            this.wardName = controls ? controls.wardName : container.querySelector('[data-vnap-ward-name]');
             this.address = container.querySelector('[data-vnap-address-line]');
             this.status = container.querySelector('[data-vnap-status]');
             this.error = container.querySelector('[data-vnap-error]');
@@ -181,6 +181,14 @@
     }
 
     const api = window.VNAddressPro = window.VNAddressPro || {};
+    // Adapter entrypoint: explicit native controls, shared lifecycle/cache/race handling.
+    api.bindFields = function (container, controls) {
+        if (!container || !container.dispatchEvent || !controls || controls.province?.tagName !== 'SELECT' || controls.ward?.tagName !== 'SELECT' || !controls.ward.options.length || controls.provinceName?.tagName !== 'INPUT' || controls.wardName?.tagName !== 'INPUT' || controls.province.form !== controls.ward.form) return null;
+        if (instances.has(container)) return instances.get(container);
+        const instance = new AddressField(container, controls);
+        instances.set(container, instance);
+        return instance;
+    };
     api.init = function (options) {
         const container = options && options.container ? options.container : options;
         if (!container || !container.matches || !container.matches(selector)) return null;

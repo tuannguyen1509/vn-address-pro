@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — Phase 11 (development of 2.0.0)
+
+- Add a conditional reusable form adapter registry and builder-neutral field/submission contracts.
+- Add CF7 Province/Ward/Address form-tags with explicit grouping, defaults and native validation.
+- Resolve readable Mail/Mail (2) values from canonical codes while preserving posted code fields.
+- Reuse shared address loading, cache, cancellation, race protection and reset through native-control binding.
+- Add native CF7 tag generators, scoped assets, availability status and offline/security/browser/mail tests.
+
+
 ## Unreleased — Phase 10 (development of 2.0.0)
 
 - Add migration-only administrative normalization, conservative candidate matching and confidence-based analysis.

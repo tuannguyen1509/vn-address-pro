@@ -36,3 +36,7 @@ See [sync design](dataset-sync.md) for version/checksum semantics, data safety a
 ## Migration (Phase 10)
 
 Available only with supported Woo and both manage_options/manage_woocommerce. Scan and apply are separate same-page nonce-protected POSTs, with preflight before headers. Default Customers / both addresses / batch 25 / dry-run / HIGH-only; nothing preselected. Choose Orders or both, date filters, next batch, or explicitly preview historical display canonicalization. Preview includes original administrative fields, candidates, confidence, warnings, status and exact before/after. No name/email/phone/street is rendered. Apply requires selection + explicit confirmation, plus separate historical-order confirmation; MEDIUM needs opt-in. Recent summaries show the latest five batches; twenty minimal non-autoloaded journals retained. No assets or public migration endpoint. System Status reports availability. Read [limits and rollback foundation](legacy-migration.md).
+
+## Form integrations (Phase 11)
+
+System Status appends registry entries, including contact-form-7, as Active or Absent/unsupported. CF7 is detected through APIs/version, never required for core/admin/Woo/migration. No global form setting, new menu, submission database or global notice. The CF7 editor receives only its native VN Province/Ward/Address-line tag generators (v2 on current CF7; native v1 on the minimum tested version). No frontend adapter assets enqueue in wp-admin. Configuration comes from form tags; see [CF7 contract](contact-form-7.md).
