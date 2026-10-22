@@ -1,0 +1,39 @@
+# Explicit legacy migration foundation
+
+No migration runs on activation, update, init, checkout, account save, dataset sync or cron. With supported optional WooCommerce 8.2+, visit Settings → VN Address → Migration. Site administrators need both `manage_options` and `manage_woocommerce`; apply also checks `edit_user` / `edit_shop_order` for each selected entity. Shop managers without site settings permission cannot use this tab. Core REST/local lookup remain independent of Woo.
+
+## Workflow and policy
+
+Scan → analyze → match → confidence → preview → select → apply → verify. Default source Customers, billing + shipping, batch 25, HIGH-only, no selections. Source can be Customers, Orders or both. Orders can be all, inclusive date range, or last N calendar days including today. Both source mode requires batch >=2 and splits the bound between sources. At most 50 entities / 100 address results per request; each source query fetches one extra ID for next-page detection. Page max 1,000,000. Offset pagination is bounded but concurrent inserts/deletes may move records between pages; rescan as necessary. There is no long-running job/queue.
+
+Scan/preview perform **zero database writes**, including no preview option/transient, lock, session or audit insertion. Integrity audit is read-only; diagnostics may use the existing WP_DEBUG log. Queries use bounded `get_users(fields=ID)` and `wc_get_orders(return=ids)` rather than `get_posts` or order SQL. Optional internal ID allowlists are <=100: customer queries use WordPress include, order IDs are read through Woo CRUD because WC 8.2 CPT queries ignore `include`. Date filtering and numeric ordering are retained. No admin UI ID allowlist field is exposed.
+
+Customer apply reuses the canonical writer: state `VN-{province_code}`, city readable ward name, and existing `_vnap_{billing|shipping}_{province|ward}_code`. Billing/shipping are independent. Country, name/email/phone/street, totals/items/payment/status are never migration inputs or targets. Customer changes never propagate to orders.
+
+Historical order default is **codes-only enrichment**. Native state/city and province-name metadata snapshots remain exactly as stored. An independently chosen scan mode can propose display canonicalization; that different target must be previewed and selected, then the stronger order confirmation checked. Order writes never change the current customer. No order revision is created or relied upon.
+
+HIGH requires explicit selection + apply confirmation. MEDIUM additionally requires the unchecked opt-in. LOW, ambiguity, unresolved/invalid/foreign records cannot be applied, including forged checkbox selections. No manual candidate override, street parsing, unverified mapping, fuzzy apply, export or rollback button is implemented.
+
+## Stateless plan and stale checks
+
+The hidden POST plan is JSON + base64url + HMAC-SHA256 using the site's auth salt, never PHP serialization and never a URL token. Maximum raw size 512 KiB, <=100 items, UUID, version 1, owner user ID, current site ID, expiry 20 minutes, dataset version/identity and exact original/target fields. It is signed, **not encrypted**; access remains protected admin HTTPS as configured by the site. It carries no name/email/phone/street. No database table/schema/version change is needed.
+
+Fingerprint covers country/state/city plus code and order province-name metadata **including presence/absence**. Apply reloads the entity and checks permissions and fingerprint, reanalyzes using today's strictly local repository, and calls local-only AddressService::validate_selection. It rechecks dataset identity and lease ownership immediately before CRUD, then reloads and compares the exact expected administrative snapshot. Dataset identity hashes version, metadata and schema version; integrity is audited at scan and apply, not inferred from version alone. Unhealthy dataset blocks the operation and calls no remote fallback. A dataset sync in progress blocks scan; the existing dataset-sync lease serializes explicit applies against official sync/other applies. Scan never acquires it.
+
+This is optimistic concurrency, not an atomic transaction with arbitrary external customer writers. A writer racing after the final fingerprint check remains a limitation; no global customer locks are introduced. Unrelated field edits are not fingerprinted and are preserved by CRUD. Direct external modifications bypassing normal sync/CRUD require their own coordination.
+
+## Apply and journal
+
+Apply writes a bounded non-autoloaded before-journal **before any address write**, then records each result: APPLIED, SKIPPED_STALE, SKIPPED_CONFIDENCE, FAILED_VALIDATION, FAILED_SAVE, UNCHANGED. One save failure does not roll back or stop unrelated records. Audit storage failure blocks initial apply or stops further writes; save verification failure is reported rather than claimed successful. Batch is not transactional. A crash can leave PREPARED entries: inspect the real record against before/expected-after before any manual repair.
+
+Options `vnap_migration_audit_{UUID}` and index `vnap_migration_audits` are non-autoloaded. Latest **20 applied/attempted batches** are retained; new apply removes older owned entries. These include timestamp, initiating user, scope, dataset identity/version, matcher revision, scan/proposed/applied/skipped/failed counts, per-address ID/type/confidence/status and minimal before/expected-after values. Dry-run creates no journal; its report remains in the returned plan. Counters refer to address results, while batch size refers to entities. At <=100 entries and <=512 bytes per administrative source field, journals stay bounded. No custom tables, personal contact data or large whole-order/customer blobs are stored.
+
+The plan UUID journal claim prevents duplicate apply; replay returns the prior result. Rolled-out audit retention means this is not permanent replay history, but successful source changes also invalidate the old fingerprint. Audit entries preserve metadata absence, enough for a future guarded rollback. **Rollback execution/UI is deferred**; restoring only selected canonical fields through CRUD must first verify current data still matches the recorded after-values. Do not treat PREPARED/FAILED_SAVE as proven untouched. Take an independent site backup before real-store migration; audit retention is not a backup system.
+
+Cleanup is bounded on subsequent applies; no new cron is added. Operators may remove only plugin-owned audit options under their own retention policy after backups/review. Deactivation retains audit; existing uninstall policy is unchanged. Apply logs use existing Logger safe classification/status/resource fields, never token/address/contact values. Preview escapes all values. Capability and nonce checks run on `load-settings_page_vn-address-pro` before headers and again before handling the protected same-page POST. No public migration REST/AJAX route, external credentials, asset library or remote request is added.
+
+## Compatibility and deferred work
+
+Public REST namespace/routes/parameters/schemas/search/sort/health, frozen fixture, legacy facade, canonical metadata and checkout behavior remain unchanged. No dataset or provider code is changed. HPOS and legacy storage share WC_Order CRUD. Official query guidance: [Woo order queries](https://developer.woocommerce.com/docs/features/orders/wc-get-orders/), [WC_Data](https://woocommerce.github.io/code-reference/classes/WC-Data.html), [WordPress get_users](https://developer.wordpress.org/reference/functions/get_users/).
+
+Manual province/ward resolution, CSV/export, verified historical crosswalks, queue workers, rollback execution, multisite and external object-cache stress matrix remain future work. No Shipping or Forms integration is included. See [validation](phase10-validation.md).

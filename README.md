@@ -45,7 +45,7 @@ Không cần Composer hoặc bước cài dependency. Autoloader nội bộ ch�
 
 ## Development Status
 
-Phase 9 — WooCommerce My Account + Order Admin, tiếp tục development của version 2.0.0. Class legacy `VN_Address_API_2025`, constants và toàn bộ public methods vẫn tồn tại dưới dạng facade trong `includes/legacy-api.php`; mọi xử lý delegate sang core mới.
+Phase 10 — Address Normalization + Legacy Migration Foundation, tiếp tục development của version 2.0.0. Class legacy `VN_Address_API_2025`, constants và toàn bộ public methods vẫn tồn tại dưới dạng facade trong `includes/legacy-api.php`; mọi xử lý delegate sang core mới.
 
 Bootstrap: entrypoint → requirements → autoloader → `Plugin::instance()->boot()` → legacy registration → `vnap_loaded`. Textdomain và version check chạy trên `init`. Hook `vnap_loaded` không có arguments, fire đúng một lần sau khi class/API registration callback đã sẵn sàng; routes thực tế được đăng ký tại `rest_api_init`. Integration muốn nghe hook phải đăng ký trước khi plugin boot; plugin tải sau có thể dùng `did_action('vnap_loaded')`.
 
@@ -94,3 +94,7 @@ Remote fallback vẫn dùng cache có thể bị evict sớm; local repository l
 TTL filters và diagnostics: [cache-reliability.md](docs/cache-reliability.md). Vận hành: [dataset sync](docs/dataset-sync.md), [admin settings](docs/admin-settings.md). Kết quả hiện tại: [Phase 5 validation](docs/phase5-validation.md).
 
 Future Migration Recommendation: chỉ cân nhắc đổi folder/main filename khi có kế hoạch migration đã kiểm chứng bảo toàn activation identity. Phase 1 không rename.
+
+## Explicit legacy migration (Phase 10)
+
+Settings → VN Address → Migration provides bounded customer/order analysis, signed dry-run preview and explicit selected apply. Default: Customers, HIGH only; historical orders receive code enrichment only. No migration runs automatically. Supported Woo is optional; core remains independent. Read [normalization](docs/address-normalization.md), [safety, retention and workflow](docs/legacy-migration.md) and [validation](docs/phase10-validation.md). Rollback data foundation is included; rollback execution, manual resolution, export and historical crosswalks are deferred.

@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased — Phase 10 (development of 2.0.0)
+
+- Add migration-only administrative normalization, conservative candidate matching and confidence-based analysis.
+- Add bounded customer/order scan and stateless signed dry-run previews with zero database writes.
+- Add explicit selected CRUD apply with source/dataset stale checks, strictly local validation and per-record verification.
+- Preserve historical order snapshots by default; require separately previewed explicit display conversion.
+- Add protected Migration settings tab and bounded minimal non-autoload journals for future rollback.
+- Add matching, database-write, security, storage, partial-failure and real admin-browser tests and operating documentation.
+
+
 ## Unreleased — Phase 9 (development of 2.0.0)
 
 - Add native Woo My Account billing/shipping ward selection with current-dataset validation and canonical customer persistence.

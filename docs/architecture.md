@@ -1,4 +1,4 @@
-# Core architecture — Phase 7
+# Core architecture — Phase 10
 
 Phase 5 remains development of plugin 2.0.0. Schema/dataset versions are independent of the release. Tables/data install on activation or the existing init upgrade checkpoint; no reactivation or remote configuration is required. The main filename stays `vn-address-api.php`. Sync/admin hooks register once from Plugin; no remote sync runs on frontend init.
 
@@ -184,4 +184,8 @@ No React runtime is bundled; the browser script uses platform externals directly
 
 Phase 9 adds MyAccountIntegration (native address_to_edit + before-save validation) and Admin/OrderAddress (native Order Data fields + scoped CRUD save). Both use AddressEditor presentation/configuration and one shared management adapter backed by AddressDataClient. Existing AddressValidator, CustomerAddress and OrderAddress remain the canonical writers. Account edits never write orders; admin order edits never write customers. Native load/copy transport fields are consumed before persistence, including Woo 8.2's older save loop. Historical unchanged administrative snapshots are retained. See [account](woocommerce-my-account.md) and [admin](woocommerce-order-admin.md).
 
-Deferred: form adapters, legacy migration, trusted upstream snapshot manifests and the full multisite/external-cache matrix.
+Deferred: form adapters, verified historical mappings, rollback execution, trusted upstream snapshot manifests and the full multisite/external-cache matrix.
+
+## Explicit migration path (Phase 10)
+
+SettingsPage load hook → MigrationPage capability/nonce preflight → MigrationService scope/health → WooAddressSource bounded queries/CRUD → LegacyAddressAnalyzer → ProvinceMatcher/WardMatcher → stateless PlanCodec. Apply alone acquires the existing dataset lease, writes MigrationAudit before-journal, reloads fingerprints, reanalyzes/validates strictly locally, saves through existing customer/order writers and verifies. No migration service is registered on init/update/sync/checkout; no public write route, queue, asset bundle or schema change. Read [workflow and concurrency limits](legacy-migration.md).

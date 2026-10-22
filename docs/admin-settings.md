@@ -32,3 +32,7 @@ Operation times use the site's WordPress timezone. Snapshot generated_at is expl
 The settings page uses native WordPress navigation, tables, forms, labels and notices and enqueues no custom CSS or JS. Frontend/Woo modules manage their own scoped assets on their supported screens. New markup classes use vnap-. Server-rendered settings feedback requires no async accessibility mechanism.
 
 See [sync design](dataset-sync.md) for version/checksum semantics, data safety and provider limitations; [validation results](phase5-validation.md) for the tested matrix.
+
+## Migration (Phase 10)
+
+Available only with supported Woo and both manage_options/manage_woocommerce. Scan and apply are separate same-page nonce-protected POSTs, with preflight before headers. Default Customers / both addresses / batch 25 / dry-run / HIGH-only; nothing preselected. Choose Orders or both, date filters, next batch, or explicitly preview historical display canonicalization. Preview includes original administrative fields, candidates, confidence, warnings, status and exact before/after. No name/email/phone/street is rendered. Apply requires selection + explicit confirmation, plus separate historical-order confirmation; MEDIUM needs opt-in. Recent summaries show the latest five batches; twenty minimal non-autoloaded journals retained. No assets or public migration endpoint. System Status reports availability. Read [limits and rollback foundation](legacy-migration.md).
