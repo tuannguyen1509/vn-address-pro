@@ -36,7 +36,7 @@ The Block script is supplied through Woo's checkout integration registry for act
 
 ## Limits
 
-COD/BACS, guest/create-account/logged-in, saved address cards, virtual carts, international checkout, HPOS and legacy storage are covered. An official express-button presence probe checks coexistence, not real wallet/payment-network certification. External field editors, checkout replacements, gateways and shipping-provider ward mappings require their own integration tests. My Account and Order Admin editing UI remain deferred. Existing state identifiers/zones from other extensions are not automatically migrated. Woo 8.2 has an upstream empty-cart checkout preload warning on confirmation pages, reproduced with this plugin deactivated; see the validation report for the exact scope.
+COD/BACS, guest/create-account/logged-in, saved address cards, virtual carts, international checkout, HPOS and legacy storage are covered. An official express-button presence probe checks coexistence, not real wallet/payment-network certification. External field editors, checkout replacements, gateways and shipping-provider ward mappings require their own integration tests. Phase 9 supplies separate [My Account](woocommerce-my-account.md) and [Order Admin](woocommerce-order-admin.md) editors. Existing state identifiers/zones from other extensions are not automatically migrated. Woo 8.2 has an upstream empty-cart checkout preload warning on confirmation pages, reproduced with this plugin deactivated; see the validation report for the exact scope.
 
 See [Store API contract](store-api-integration.md), [capability and validation report](phase8-validation.md), and [state identifiers](woocommerce-state-codes.md).
 

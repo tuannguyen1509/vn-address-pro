@@ -148,3 +148,28 @@ StoreApiTest has 23 real HTTP checks using native Nonce/Cart Token authenticatio
 Existing tests updated: RenderTest now checks the shared internal data dependency and reads localized config from that handle. Generic HTML names, VNAddressPro methods/events and all REST fixtures remain unchanged. The Phase 7 compatibility-declaration assertion follows the newly supported Block capability; its Classic behavior assertions remain intact. The shared order report adds shipping state/province-code observations without changing production routes.
 
 Run the existing 41-check frontend browser suite and 30-check admin HTTP suite too. Remove the offline MU fixtures before remote-mock/contract tests; the highest-priority blocker otherwise overrides their mocks. RequirementsTest is standalone (`php tests/RequirementsTest.php`), not a wp eval-file script. See [Phase 8 report](../docs/phase8-validation.md) for the tested runtime/datastore matrix and harness corrections.
+
+## Phase 9 My Account and Order Admin
+
+Use disposable sites/databases only. Keep Woo 8.2.0/PHP 8.1/WP 6.3.7 and Woo 11.2.1/PHP 8.3/WP 7.1.3 pairings. The module minimum remains Woo 8.2; no new build dependency is needed.
+
+```sh
+wp eval-file wp-content/plugins/vn-address-pro/tests/WooCommerce/Management/IntegrationTest.php
+wp eval-file wp-content/plugins/vn-address-pro/tests/WooCommerce/Management/ParityTest.php
+wp eval-file wp-content/plugins/vn-address-pro/tests/WooCommerce/Management/AssetsTest.php
+```
+
+IntegrationTest has 43 checks for independent customer/order CRUD, strict validation, malformed native arrays, legacy/obsolete values, no-change historical retention, native customer-load codes, scoped foreign clearing, zero HTTP, save-hook ordering and no customer writes from order edits. The actual native Order Data save loop is checked for canonical fields and absence of parallel transport metadata. It restores current user/POST/admin errors and deletes its owned customer/order. ParityTest compares actual Classic, Block and Account callbacks for independent billing/shipping native properties and all four canonical metadata keys; it saves no customer/order and restores checkout content/cart state. AssetsTest adds four checks for dashboard/order-list exclusion and native edit-screen enqueue. Run separately with HPOS on/off using Woo's official synchronization before switches.
+
+Install the Phase 7 OfflineFixture as a temporary MU plugin (no additional production endpoint). First run actual Classic and Block checkout browser/API tests to create orders with real items. Run Management/Setup.php through WP-CLI and store its JSON output in a temporary file outside Git. It reuses a real native order from each checkout type, resets their addresses/customer for deterministic editing, creates legacy/obsolete fixtures, sets the first administrator's test customer addresses and disables native Gravatar requests for network isolation. It is destructive to test configuration and must never run on a merchant site. IDs, order keys and credentials are never committed.
+
+Copy that JSON where the external Playwright process can read it. Set VNAP_TEST_URL, VNAP_TEST_USER, VNAP_TEST_PASSWORD and VNAP_TEST_FIXTURE (absolute JSON path), then run:
+
+```sh
+node /path/to/plugin/tests/WooCommerce/Management/BrowserTest.mjs
+node /path/to/plugin/tests/WooCommerce/Management/RaceTest.mjs
+```
+
+The 46-check browser runner uses real native My Account POSTs and Order Admin saves/reloads on actual Classic/Block-created orders: both addresses, tampering, VN/foreign transitions, readable overview, historical separation, native customer loading/copy, obsolete/legacy no-change saves, console and network checks. SelectWoo-enhanced native admin state/country controls are set through their underlying selects with normal events. Ward controls are ordinary visible selects. The separate race runner deliberately resolves an abort-insensitive old province response after a newer selection on both account/admin screens and checks that current code/options remain coherent; it saves no address.
+
+Preserve existing Phase 1–8 tests and REST fixture. Run Classic and Blocks browser/API suites in the same datastore matrix, and remove MU blockers before remote-mock suites. For minimum Woo's upstream empty-cart confirmation preload warning, see Phase 8/9 reports; do not patch vendor code or suppress PHP errors. See [Phase 9 results](../docs/phase9-validation.md).

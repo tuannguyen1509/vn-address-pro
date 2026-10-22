@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — Phase 9 (development of 2.0.0)
+
+- Add native Woo My Account billing/shipping ward selection with current-dataset validation and canonical customer persistence.
+- Enhance Order Data billing/shipping fields on HPOS and legacy edit screens, including native customer load and address copy.
+- Reuse shared ward loading, state mapping, validation and CRUD writers without adding a second metadata schema.
+- Preserve historical/obsolete order snapshots on rendering and unchanged saves; keep customer and order edits independent.
+- Reject tampered selections before native persistence and report errors through Woo notices.
+- Add account/admin status, source-flow documentation, parity, offline, race and browser regression tests.
+
 ## Unreleased — Phase 8 (development of 2.0.0)
 
 - Add automatic province-dependent billing/shipping ward blocks through official Woo checkout registration and IntegrationInterface.

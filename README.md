@@ -45,13 +45,15 @@ Không cần Composer hoặc bước cài dependency. Autoloader nội bộ ch�
 
 ## Development Status
 
-Phase 8 — WooCommerce Checkout Block & Store API Integration, tiếp tục development của version 2.0.0. Class legacy `VN_Address_API_2025`, constants và toàn bộ public methods vẫn tồn tại dưới dạng facade trong `includes/legacy-api.php`; mọi xử lý delegate sang core mới.
+Phase 9 — WooCommerce My Account + Order Admin, tiếp tục development của version 2.0.0. Class legacy `VN_Address_API_2025`, constants và toàn bộ public methods vẫn tồn tại dưới dạng facade trong `includes/legacy-api.php`; mọi xử lý delegate sang core mới.
 
 Bootstrap: entrypoint → requirements → autoloader → `Plugin::instance()->boot()` → legacy registration → `vnap_loaded`. Textdomain và version check chạy trên `init`. Hook `vnap_loaded` không có arguments, fire đúng một lần sau khi class/API registration callback đã sẵn sàng; routes thực tế được đăng ký tại `rest_api_init`. Integration muốn nghe hook phải đăng ký trước khi plugin boot; plugin tải sau có thể dùng `did_action('vnap_loaded')`.
 
 Quy ước cho code mới: namespace `Tunlamweb\VNAddressPro`, PHP/options/hooks `vnap_`, CSS `.vnap-`, JavaScript `VNAddressPro`, text domain `vn-address-pro`.
 
-Đã có persistent local database, offline normal lookup, manual/scheduled dataset updates, integrity validation, safe repair/recovery và frontend fields dùng lại được. WooCommerce là module tùy chọn với Classic Checkout, Checkout Block và Store API. Form integrations chưa triển khai. Xem [tests](tests/README.md) và [changelog](CHANGELOG.md).
+Đã có persistent local database, offline normal lookup, manual/scheduled dataset updates, integrity validation, safe repair/recovery và frontend fields dùng lại được. WooCommerce là module tùy chọn với Classic Checkout, Checkout Block, Store API, My Account address editing và Order Admin trên HPOS/legacy storage. Form integrations chưa triển khai. Xem [tests](tests/README.md) và [changelog](CHANGELOG.md).
+
+My Account và Order Admin dùng cùng canonical province/ward metadata với checkout. Khách đổi địa chỉ không sửa đơn cũ; admin chỉnh đơn không tự sửa địa chỉ khách hàng. Snapshot cũ/obsolete được giữ khi không thay lựa chọn hành chính. Xem [My Account](docs/woocommerce-my-account.md), [Order Admin](docs/woocommerce-order-admin.md) và [Phase 9 validation](docs/phase9-validation.md).
 
 ## WooCommerce Classic Checkout
 

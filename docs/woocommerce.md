@@ -10,7 +10,7 @@ The module supports the configured checkout page containing `[woocommerce_checko
 
 The installed production distribution source was reviewed in class-wc-checkout.php (get_posted_data, validation, process_customer and create_order), class-wc-countries.php (states/locale/format), class-wc-order.php (formatted addresses), assets/js/frontend/checkout.js and country-select.js (native changes, country_to_state_changed, update_checkout, updated_checkout). Current Woo 11.2 uses newer notice markup on Classic Checkout; integration does not replace its notices.
 
-Checkout Block and Store API use the separate Phase 8 module described in [Blocks integration](woocommerce-blocks.md). FeaturesUtil declares tested Cart/Checkout Blocks compatibility after acceptance validation. Detection uses the configured page's block/shortcode content, not URL alone. Classic assets and mutation callbacks skip Block, unknown-page and REST contexts. Global province states and historical order formatting are shared. No custom Cart UI is added. My Account editing, order-admin UI, field-editor adapters, legacy migration and shipping-provider APIs are deferred.
+Checkout Block and Store API use the separate Phase 8 module described in [Blocks integration](woocommerce-blocks.md). FeaturesUtil declares tested Cart/Checkout Blocks compatibility after acceptance validation. Detection uses page content plus the actual Block render signal. Classic assets and mutation callbacks skip Block, unknown-page and REST contexts. Global province states and historical order formatting are shared. No custom Cart UI is added. My Account and Order Admin use their separate Phase 9 modules; field-editor adapters, legacy migration and shipping-provider APIs remain deferred.
 
 ## Mapping and fields
 
@@ -65,6 +65,6 @@ No integration settings/toggles or postcode-hiding options were added. Supported
 
 Checkout supports COD/BACS through native Woo lifecycle; no production gateway-specific logic is present. Shipping zones and taxes use deterministic province state keys. Existing zones/taxes based on a different extension's Vietnam keys need merchant review; there is no automatic migration. Advanced third-party field editors, custom checkout builders, payment/address autocomplete replacements and provider-specific ward shipping calculations are not certified.
 
-Phase 8's [Checkout Block module](woocommerce-blocks.md) and [Store API contract](store-api-integration.md) reuse these native fields and metadata. City hiding is restricted to VN Block checkout and Store API address contexts; My Account editing is not integrated. Classic retains its own hooks and adapter.
+Phase 8's [Checkout Block module](woocommerce-blocks.md) and [Store API contract](store-api-integration.md) reuse these native fields and metadata. Phase 9 adds [My Account](woocommerce-my-account.md) and [Order Admin](woocommerce-order-admin.md) through native form/CRUD hooks. Each UI scopes its VN city enhancement to its own address editor. Classic retains its own hooks and adapter.
 
-See [Phase 7 validation](phase7-validation.md) and [Phase 8 validation](phase8-validation.md) for exact tests, versions and limitations.
+See [Phase 7 validation](phase7-validation.md), [Phase 8 validation](phase8-validation.md) and [Phase 9 validation](phase9-validation.md) for exact tests, versions and limitations.

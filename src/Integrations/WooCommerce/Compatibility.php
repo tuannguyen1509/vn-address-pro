@@ -44,6 +44,8 @@ final class Compatibility {
             __( 'WooCommerce Version', 'vn-address-pro' ) => $detected ? WC_VERSION : __( 'Not installed or inactive', 'vn-address-pro' ),
             __( 'Woo Integration', 'vn-address-pro' ) => ! $detected ? __( 'Inactive; core remains independent', 'vn-address-pro' ) : ( self::supported() ? __( 'Enabled', 'vn-address-pro' ) : __( 'Unsupported WooCommerce version', 'vn-address-pro' ) ),
             __( 'Checkout Type', 'vn-address-pro' ) => self::checkout_type(),
+            __( 'Woo My Account integration', 'vn-address-pro' ) => self::supported() ? __( 'Active', 'vn-address-pro' ) : __( 'Inactive', 'vn-address-pro' ),
+            __( 'Woo Order Admin integration', 'vn-address-pro' ) => self::supported() ? __( 'Active', 'vn-address-pro' ) : __( 'Inactive', 'vn-address-pro' ),
             __( 'Checkout Blocks', 'vn-address-pro' ) => self::supports_blocks() ? __( 'Supported', 'vn-address-pro' ) : __( 'Unavailable; requires supported WooCommerce Blocks APIs', 'vn-address-pro' ),
             __( 'HPOS Enabled', 'vn-address-pro' ) => class_exists( '\Automattic\WooCommerce\Utilities\OrderUtil' ) && \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled() ? __( 'Yes', 'vn-address-pro' ) : __( 'No', 'vn-address-pro' ),
         );
