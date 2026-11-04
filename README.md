@@ -99,6 +99,8 @@ Future Migration Recommendation: chỉ cân nhắc đổi folder/main filename k
 
 ## Explicit legacy migration (Phase 10)
 
+Shipping configuration has a separate optional [scan/preview/selected apply tool](docs/shipping-configuration.md) for legacy province identifiers in Woo zones and the store address. It preserves shipping prices and other merchant settings and does not run automatically. Name-based suggestions require geographic review; they are not a historical boundary crosswalk.
+
 Settings → VN Address → Migration provides bounded customer/order analysis, signed dry-run preview and explicit selected apply. Default: Customers, HIGH only; historical orders receive code enrichment only. No migration runs automatically. Supported Woo is optional; core remains independent. Read [normalization](docs/address-normalization.md), [safety, retention and workflow](docs/legacy-migration.md) and [validation](docs/phase10-validation.md). Rollback data foundation is included; rollback execution, manual resolution, export and historical crosswalks are deferred.
 
 ## Form integrations (Phases 11–12)

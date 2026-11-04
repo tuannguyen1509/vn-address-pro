@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased — Shipping configuration conversion
+
+- Add optional Shipping Configuration scan/preview/selected apply for legacy province identifiers in Woo shipping zones and the store address.
+- Derive conservative name-based suggestions from the local dataset; preserve merchant rates, methods, zone order, tax rules and customer/order records.
+- Require explicit review, signed purpose-bound previews, capability/nonce checks, source/dataset freshness, transactional writes and bounded before/after history.
+- Add isolated configuration migration tests and regression validation; no automatic conversion on activation or upgrade.
+
 ## 2.0.0 — Unreleased (Phase 12)
 
 - Add optional Fluent Forms adapter with native Province and dependent Ward builder fields.

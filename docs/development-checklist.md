@@ -4,6 +4,8 @@
 > Ngày ghi chú: **27/10/2026**. Mốc hiện tại: **hoàn thành Phase 12**.
 > File này là bàn giao để đọc khi quay lại; không phải yêu cầu tự động triển khai phase tiếp theo.
 
+> Cập nhật 04/11/2026: đã tiếp tục theo yêu cầu của tác giả, bổ sung công cụ chuyển mã tỉnh trong cấu hình vận chuyển/cửa hàng theo scan → preview → selected apply. Xem [phạm vi, giới hạn và kiểm thử riêng](shipping-configuration.md). Các mốc Phase 12 bên dưới là ghi nhận lịch sử, không phải trạng thái của thay đổi mới này. Carrier mapping và historical crosswalk vẫn chưa triển khai.
+
 ## 1. Đọc nhanh trước khi code lại
 
 - Plugin: **VN Address Pro**, tác giả **Tunlamweb**.

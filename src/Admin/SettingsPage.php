@@ -12,6 +12,7 @@ final class SettingsPage {
         add_action( 'admin_post_vnap_dataset_action', array( $this, 'handle' ) );
         add_action( 'admin_notices', array( $this, 'notice' ) );
         add_action( 'load-settings_page_vn-address-pro', array( new MigrationPage(), 'preflight' ) );
+        add_action( 'load-settings_page_vn-address-pro', array( new ShippingConfigurationPage(), 'preflight' ) );
     }
     public function menu(): void { add_options_page( __( 'VN Address', 'vn-address-pro' ), __( 'VN Address', 'vn-address-pro' ), 'manage_options', 'vn-address-pro', array( $this, 'render' ) ); }
     public function authorize( string $command, string $nonce ): bool {
@@ -70,7 +71,10 @@ final class SettingsPage {
     public function render(): void {
         if ( ! current_user_can( 'manage_options' ) ) { wp_die( esc_html__( 'Access denied.', 'vn-address-pro' ), '', array( 'response' => 403 ) ); }
         $tabs = array( 'general' => __( 'General', 'vn-address-pro' ), 'data' => __( 'Data', 'vn-address-pro' ), 'tools' => __( 'Tools', 'vn-address-pro' ), 'status' => __( 'System Status', 'vn-address-pro' ) );
-        if ( \Tunlamweb\VNAddressPro\Migration\MigrationService::allowed() ) { $tabs['migration'] = __( 'Migration', 'vn-address-pro' ); }
+        if ( \Tunlamweb\VNAddressPro\Migration\MigrationService::allowed() ) {
+            $tabs['migration'] = __( 'Migration', 'vn-address-pro' );
+            $tabs['shipping'] = __( 'Shipping Configuration', 'vn-address-pro' );
+        }
         $tab = isset( $_GET['tab'] ) && is_string( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'general';
         if ( $tab === 'migration' && ! \Tunlamweb\VNAddressPro\Migration\MigrationService::allowed() ) { wp_die( esc_html__( 'Migration requires site and WooCommerce management permissions.', 'vn-address-pro' ), '', array( 'response' => 403 ) ); }
         if ( ! isset( $tabs[ $tab ] ) ) { $tab = 'general'; }
@@ -79,6 +83,7 @@ final class SettingsPage {
         foreach ( $tabs as $key => $label ) { echo '<a class="nav-tab' . ( $tab === $key ? ' nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'options-general.php?page=vn-address-pro&tab=' . $key ) ) . '"' . ( $tab === $key ? ' aria-current="page"' : '' ) . '>' . esc_html( $label ) . '</a>'; }
         echo '</nav><h2>' . esc_html( $tabs[ $tab ] ) . '</h2>';
         if ( $tab === 'migration' ) { ( new MigrationPage() )->render(); echo '</div>'; return; }
+        if ( $tab === 'shipping' ) { ( new ShippingConfigurationPage() )->render(); echo '</div>'; return; }
         $result = get_transient( 'vnap_admin_result_' . get_current_user_id() );
         if ( is_string( $result ) ) { echo '<div class="notice notice-info"><p>' . esc_html( $result ) . '</p></div>'; delete_transient( 'vnap_admin_result_' . get_current_user_id() ); }
         $base = array(

@@ -1,5 +1,7 @@
 # Core and regression checks
 
+Shipping configuration conversion: run `wp eval-file wp-content/plugins/vn-address-pro/tests/Migration/ShippingConfigurationTest.php` only on a disposable WooCommerce installation. It creates a synthetic zone/method, restores owned settings and exercises atomic rollback. See [workflow, safety, limits and results](../docs/shipping-configuration.md).
+
 Use a disposable WordPress database, English locale and PHP with mbstring. Do not run these tests against a production site: they temporarily replace two address transients and exercise the version marker. Existing cache values are restored with a fresh 24-hour TTL.
 
 No PHPUnit, Composer or end-user dependency is required. The contract runner uses the real WordPress REST dispatcher, parameter validation, HTTP API filter and Transients API.

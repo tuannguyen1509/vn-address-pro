@@ -68,6 +68,7 @@ final class MigrationService {
     public function apply( string $token, array $selected, bool $confirm = false, bool $orders = false, bool $medium = false ): array|\WP_Error {
         if ( ! self::allowed() ) { return $this->error( 'permission' ); }
         $plan = ( new PlanCodec() )->decode( $token ); if ( is_wp_error( $plan ) ) { return $plan; }
+        if ( isset( $plan['purpose'] ) ) { return $this->error( 'plan_type' ); }
         if ( ! $confirm || ! $selected || count( $selected ) > 100 ) { return $this->error( 'confirmation' ); }
         $indices = array();
         foreach ( $selected as $i ) {
