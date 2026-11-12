@@ -22,6 +22,12 @@
             this.status = container.querySelector('[data-vnap-status]');
             this.error = container.querySelector('[data-vnap-error]');
             this.retry = container.querySelector('[data-vnap-retry]');
+            this.provinceRows = [...this.province.options].map(option => ({ code: option.value, name: option.textContent }));
+            this.searches = ['province', 'ward'].map(kind => ({ kind, input: container.querySelector('[data-vnap-search="' + kind + '"]') })).filter(item => item.input);
+            for (const item of this.searches) {
+                item.listener = () => this.filterOptions(item.kind);
+                item.input.addEventListener('input', item.listener);
+            }
             this.placeholder = this.ward.options[0].textContent;
             this.sequence = 0;
             this.destroyed = false;
@@ -69,6 +75,18 @@
             this.wardName.value = '';
             this.wards = [];
             this.loadedProvince = '';
+            const search = this.searches.find(item => item.kind === 'ward');
+            if (search) { search.input.value = ''; search.input.disabled = true; }
+        }
+        filterOptions(kind) {
+            const search = this.searches.find(item => item.kind === kind);
+            if (!search || this.destroyed) return;
+            const normalize = text => String(text).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[đĐ]/g, 'd').toLowerCase().trim();
+            const select = kind === 'province' ? this.province : this.ward;
+            const value = select.value, term = normalize(search.input.value);
+            const rows = kind === 'province' ? this.provinceRows : [{ code: '', name: this.placeholder }, ...this.wards];
+            const visible = rows.filter(row => !row.code || row.code === value || normalize(row.name).includes(term));
+            select.replaceChildren(...visible.map(row => new Option(row.name, row.code, false, row.code === value)));
         }
         announce(text = '') { if (this.status) this.status.textContent = text; }
         fail(kind, message) {
@@ -83,6 +101,8 @@
             if (this.controller) this.controller.abort();
             this.controller = null;
             this.clearWard();
+            const provinceSearch = this.searches.find(item => item.kind === 'province');
+            if (provinceSearch) { provinceSearch.input.value = ''; this.filterOptions('province'); }
             this.province.removeAttribute('aria-invalid');
             if (this.error) this.error.textContent = '';
             if (this.retry) this.retry.hidden = true;
@@ -112,6 +132,8 @@
                 this.loadedProvince = chosen;
                 for (const row of rows) this.ward.add(new Option(row.name, row.code));
                 this.ward.disabled = rows.length === 0;
+                const wardSearch = this.searches.find(item => item.kind === 'ward');
+                if (wardSearch) wardSearch.input.disabled = rows.length === 0;
                 this.announce(rows.length ? strings.loaded : strings.empty);
                 emit(this.container, 'wards-loaded', { provinceCode: chosen, count: rows.length });
                 if (this.destroyed || current !== this.sequence) return false;
@@ -135,6 +157,7 @@
             if (this.destroyed) return false;
             const wanted = code(value);
             const row = this.loadedProvince === this.province.value && this.wards.find(item => item.code === wanted);
+            if (row && ![...this.ward.options].some(option => option.value === wanted)) this.ward.add(new Option(row.name, wanted));
             this.ward.value = row ? wanted : '';
             this.wardName.value = row ? row.name : '';
             this.ward.removeAttribute('aria-invalid');
@@ -164,6 +187,7 @@
         }
         destroy() {
             if (this.destroyed) return;
+            for (const item of this.searches) { item.input.value = ''; this.filterOptions(item.kind); item.input.removeEventListener('input', item.listener); }
             this.destroyed = true;
             ++this.sequence;
             if (this.controller) this.controller.abort();
@@ -176,6 +200,7 @@
             instances.delete(this.container);
             this.wards = [];
             this.controller = null;
+            this.searches = [];
             for (const name of ['container','province','ward','provinceName','wardName','address','status','error','retry','form']) this[name] = null;
         }
     }

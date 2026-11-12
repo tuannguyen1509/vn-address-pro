@@ -2,6 +2,8 @@
 
 ## Overview
 
+Current build: **2.0.2** (2026-11-05). Adds [WPForms Lite](docs/wpforms.md), searchable address components and dataset change summaries. See [CHANGELOG](CHANGELOG.md). Dataset and REST contract versions remain independent of the plugin version.
+
 WordPress REST API cho địa chỉ Việt Nam hai cấp: Tỉnh/Thành phố → Phường/Xã/Đặc khu. Tác giả: **Tunlamweb** — [Author URI](https://tunlamweb.com). Plugin độc lập theme, không yêu cầu WooCommerce hoặc form plugin.
 
 ## Requirements
@@ -45,7 +47,7 @@ Không cần Composer hoặc bước cài dependency. Autoloader nội bộ ch�
 
 ## Development Status
 
-**Tạm ngưng phát triển sau Phase 12.** Khi quay lại, đọc [checklist công việc và ghi chú bàn giao](docs/development-checklist.md) để biết phần đã có, backlog chưa làm và các bước kiểm tra trước khi code tiếp.
+**Đã tiếp tục phát triển sau Phase 12; bản hiện tại 2.0.2.** Đọc [checklist công việc và ghi chú bàn giao](docs/development-checklist.md) để biết phần đã có và backlog. Các ghi chú tạm ngưng/2.0.0 trong báo cáo phase là trạng thái lịch sử.
 
 Phase 12 — Fluent Forms Address Adapter, tiếp tục development của version 2.0.0. Class legacy `VN_Address_API_2025`, constants và toàn bộ public methods vẫn tồn tại dưới dạng facade trong `includes/legacy-api.php`; mọi xử lý delegate sang core mới.
 
@@ -53,7 +55,7 @@ Bootstrap: entrypoint → requirements → autoloader → `Plugin::instance()->b
 
 Quy ước cho code mới: namespace `Tunlamweb\VNAddressPro`, PHP/options/hooks `vnap_`, CSS `.vnap-`, JavaScript `VNAddressPro`, text domain `vn-address-pro`.
 
-Đã có persistent local database, offline normal lookup, manual/scheduled dataset updates, integrity validation, safe repair/recovery và frontend fields dùng lại được. WooCommerce là module tùy chọn với Classic Checkout, Checkout Block, Store API, My Account address editing và Order Admin trên HPOS/legacy storage. Form integrations đã có Contact Form 7 và Fluent Forms; WPForms, Elementor Forms và Gravity Forms chưa triển khai. Xem [tests](tests/README.md) và [changelog](CHANGELOG.md).
+Đã có persistent local database, offline normal lookup, manual/scheduled dataset updates, integrity validation, safe repair/recovery và frontend fields dùng lại được. WooCommerce là module tùy chọn với Classic Checkout, Checkout Block, Store API, My Account address editing và Order Admin trên HPOS/legacy storage. Form integrations đã có Contact Form 7, Fluent Forms và WPForms Lite; Elementor Forms và Gravity Forms chưa triển khai. Xem [tests](tests/README.md) và [changelog](CHANGELOG.md).
 
 My Account và Order Admin dùng cùng canonical province/ward metadata với checkout. Khách đổi địa chỉ không sửa đơn cũ; admin chỉnh đơn không tự sửa địa chỉ khách hàng. Snapshot cũ/obsolete được giữ khi không thay lựa chọn hành chính. Xem [My Account](docs/woocommerce-my-account.md), [Order Admin](docs/woocommerce-order-admin.md) và [Phase 9 validation](docs/phase9-validation.md).
 
@@ -105,4 +107,4 @@ Settings → VN Address → Migration provides bounded customer/order analysis, 
 
 ## Form integrations (Phases 11–12)
 
-Contact Form 7 and Fluent Forms provide dependent Province/Ward fields, server-side relationship validation and readable notification values while keeping canonical codes. Both are optional. CF7 tested: 5.8.1–6.2.3. Fluent Forms tested: 6.2.0–6.2.16; its adapter requires WordPress 6.4+ and uses native builder fields, entry formatting and SmartCodes. Use Fluent's native Simple Text for an optional street line. See [form architecture](docs/form-integrations.md), [CF7](docs/contact-form-7.md), [Fluent Forms setup and limits](docs/fluent-forms.md) and [Phase 12 validation](docs/phase12-validation.md). WPForms, Elementor Forms and Gravity Forms remain planned.
+Contact Form 7 and Fluent Forms provide dependent Province/Ward fields, server-side relationship validation and readable notification values while keeping canonical codes. Both are optional. CF7 tested: 5.8.1–6.2.3. Fluent Forms tested: 6.2.0–6.2.16; its adapter requires WordPress 6.4+ and uses native builder fields, entry formatting and SmartCodes. Use Fluent's native Simple Text for an optional street line. See [form architecture](docs/form-integrations.md), [CF7](docs/contact-form-7.md), [Fluent Forms setup and limits](docs/fluent-forms.md) and [Phase 12 validation](docs/phase12-validation.md). Version 2.0.2 adds an optional combined address field for [WPForms Lite 2.0.3.1+](docs/wpforms.md); Pro is not yet supported. Elementor Forms and Gravity Forms remain planned.

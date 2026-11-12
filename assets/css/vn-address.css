@@ -9,3 +9,10 @@
 .vnap-address .vnap-retry { justify-self: start; font: inherit; }
 .vnap-address [hidden] { display: none; }
 .vnap-address [aria-invalid="true"] { outline: 2px solid currentColor; outline-offset: 2px; }
+.vnap-address .vnap-select,
+.vnap-address .vnap-input,
+.vnap-address .vnap-retry { min-height: 44px; }
+@media (max-width: 640px) {
+    .vnap-address .vnap-select,
+    .vnap-address .vnap-input { font-size: 16px; }
+}

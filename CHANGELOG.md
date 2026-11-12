@@ -1,11 +1,19 @@
 # Changelog
 
-## Unreleased — Shipping configuration conversion
+## 2.0.2 — 2026-11-05
+
+- Add an optional native combined Vietnam address field for WPForms Lite 2.0.3.1+, with independent groups, server relationship validation, readable notifications and canonical code properties. Pro is explicitly gated until certified.
+- Add accent-insensitive province/ward search to the reusable shortcode/PHP component, enabled by default and configurable with `searchable="no"`; preserve selection, reset and request-race handling. Improve touch targets and mobile input font sizing.
+- Add last-check dataset change counts for added/removed/renamed provinces and wards and changed ward parents, without publishing during Check or rewriting customer/order addresses.
+- Validate on isolated WordPress with native WPForms builder save/reload, real submit/intercepted notification, mobile layout, source-absent operation and existing core/REST/local/sync regression suites.
+
+## 2.0.1 — 2026-11-05
 
 - Add optional Shipping Configuration scan/preview/selected apply for legacy province identifiers in Woo shipping zones and the store address.
 - Derive conservative name-based suggestions from the local dataset; preserve merchant rates, methods, zone order, tax rules and customer/order records.
 - Require explicit review, signed purpose-bound previews, capability/nonce checks, source/dataset freshness, transactional writes and bounded before/after history.
 - Add isolated configuration migration tests and regression validation; no automatic conversion on activation or upgrade.
+- Package a self-contained installation ZIP and verify local lookup independently of WooCommerce, plus Checkout Block integration on a second local website.
 
 ## 2.0.0 — Unreleased (Phase 12)
 

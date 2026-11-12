@@ -15,8 +15,12 @@ final class DatasetSyncResult {
     public const VERIFY_ERROR = 'VERIFY_ERROR';
     public const HEALTHY = 'HEALTHY';
     public const DOWNGRADE_BLOCKED = 'DOWNGRADE_BLOCKED';
-    public function __construct( public readonly string $status, public readonly string $source = '', public readonly string $old_version = '', public readonly string $new_version = '' ) {}
-    public function to_array(): array { return array( 'status' => $this->status, 'source' => $this->source, 'old_version' => $this->old_version, 'new_version' => $this->new_version, 'at' => time() ); }
+    public function __construct( public readonly string $status, public readonly string $source = '', public readonly string $old_version = '', public readonly string $new_version = '', public readonly array $changes = array() ) {}
+    public function to_array(): array {
+        $result = array( 'status' => $this->status, 'source' => $this->source, 'old_version' => $this->old_version, 'new_version' => $this->new_version, 'at' => time() );
+        if ( $this->changes ) { $result['changes'] = $this->changes; }
+        return $result;
+    }
     public function message(): string {
         if ( $this->status === self::SUCCESS && $this->source !== '' ) {
             return sprintf( __( 'Dataset published successfully. Source: %s.', 'vn-address-pro' ), $this->source );

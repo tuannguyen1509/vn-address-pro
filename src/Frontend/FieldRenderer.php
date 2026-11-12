@@ -7,6 +7,7 @@ final class FieldRenderer {
         $id = wp_unique_id( 'vnap-address-' ); $selected = '';
         $html = '<div id="' . esc_attr( $id ) . '" class="vnap-address ' . esc_attr( $c['class'] ) . '" data-vnap-address data-vnap-default-ward="' . esc_attr( $c['default_ward'] ) . '">';
         $html .= $this->open( $id, 'province', $c );
+        $html .= $this->search( $id, 'province', $c );
         $html .= '<select class="vnap-select" data-vnap-province id="' . esc_attr( $id . '-province' ) . '" name="' . esc_attr( $c['province_name'] ) . '"' . $this->attributes( $id, $c['province_required'] ) . ( is_wp_error( $provinces ) ? ' disabled' : '' ) . '>';
         $html .= '<option value="">' . esc_html( $c['province_placeholder'] ) . '</option>';
         if ( ! is_wp_error( $provinces ) ) {
@@ -16,6 +17,7 @@ final class FieldRenderer {
             }
         }
         $html .= '</select></div>' . $this->open( $id, 'ward', $c );
+        $html .= $this->search( $id, 'ward', $c );
         $html .= '<select class="vnap-select" data-vnap-ward id="' . esc_attr( $id . '-ward' ) . '" name="' . esc_attr( $c['ward_name'] ) . '" disabled' . $this->attributes( $id, $c['ward_required'] ) . '><option value="">' . esc_html( $c['ward_placeholder'] ) . '</option></select></div>';
         $html .= '<input type="hidden" data-vnap-province-name name="' . esc_attr( $c['province_hidden_name'] ) . '" value="' . esc_attr( $selected ) . '"><input type="hidden" data-vnap-ward-name name="' . esc_attr( $c['ward_hidden_name'] ) . '" value="">';
         if ( $c['show_address'] ) {
@@ -29,6 +31,11 @@ final class FieldRenderer {
     }
     private function open( string $id, string $field, array $c ): string {
         return '<div class="vnap-field"><label class="vnap-label" for="' . esc_attr( $id . '-' . $field ) . '">' . esc_html( $c[ $field . '_label' ] ) . '</label>';
+    }
+    private function search( string $id, string $field, array $c ): string {
+        if ( empty( $c['searchable'] ) ) { return ''; }
+        $label = $field === 'province' ? __( 'Tìm Tỉnh / Thành phố (có hoặc không dấu)', 'vn-address-pro' ) : __( 'Tìm Phường / Xã (có hoặc không dấu)', 'vn-address-pro' );
+        return '<input type="search" class="vnap-input vnap-search" data-vnap-search="' . esc_attr( $field ) . '" aria-label="' . esc_attr( $label ) . '" aria-controls="' . esc_attr( $id . '-' . $field ) . '" placeholder="' . esc_attr( $label ) . '" autocomplete="off"' . ( $field === 'ward' ? ' disabled' : '' ) . '>';
     }
     private function attributes( string $id, bool $required ): string {
         return ' aria-describedby="' . esc_attr( $id . '-status ' . $id . '-error' ) . '"' . ( $required ? ' required aria-required="true"' : '' );

@@ -1,6 +1,6 @@
 # Reusable form integration foundation
 
-VN Address Pro 2.0.0 (Unreleased) keeps forms optional. Shared contracts/registry contain no vendor dependency, global input reads, HTTP implementation or submission database. Contact Form 7 and Fluent Forms are implemented in separate optional adapter modules. Elementor, WPForms and Gravity Forms are not implemented. See [Fluent Forms](fluent-forms.md) for native fields, version requirements and entry/notification behavior.
+VN Address Pro 2.0.2 keeps forms optional. Shared contracts/registry contain no vendor dependency, global input reads, HTTP implementation or submission database. Contact Form 7, Fluent Forms and WPForms Lite are separate optional adapters. Elementor and Gravity Forms are not implemented. See [Fluent Forms](fluent-forms.md) and [WPForms Lite support and limits](wpforms.md).
 
 ## Registry and availability
 

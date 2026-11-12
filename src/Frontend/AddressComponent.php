@@ -22,12 +22,12 @@ final class AddressComponent {
             'ward_placeholder' => __( 'Chọn Phường / Xã / Đặc khu', 'vn-address-pro' ),
             'address_placeholder' => __( 'Số nhà, tên đường', 'vn-address-pro' ),
             'default_province' => '', 'default_ward' => '', 'default_address' => '',
-            'show_address' => 'yes', 'required' => 'no', 'province_required' => '', 'ward_required' => '', 'address_required' => '', 'class' => '',
+            'show_address' => 'yes', 'searchable' => 'yes', 'required' => 'no', 'province_required' => '', 'ward_required' => '', 'address_required' => '', 'class' => '',
         );
         $config = array();
         foreach ( $defaults as $key => $fallback ) {
             $value = $args[ $key ] ?? $fallback;
-            if ( is_bool( $value ) && in_array( $key, array( 'show_address','required','province_required','ward_required','address_required' ), true ) ) { $value = $value ? 'yes' : 'no'; }
+            if ( is_bool( $value ) && in_array( $key, array( 'show_address','searchable','required','province_required','ward_required','address_required' ), true ) ) { $value = $value ? 'yes' : 'no'; }
             $config[ $key ] = is_scalar( $value ) ? sanitize_text_field( (string) $value ) : $fallback;
         }
         foreach ( array( 'province_name','ward_name','address_name','province_hidden_name','ward_hidden_name' ) as $key ) {
@@ -38,6 +38,7 @@ final class AddressComponent {
         }
         $truthy = static fn( $v ) => in_array( strtolower( $v ), array( 'yes','true','1' ), true );
         $config['show_address'] = $truthy( $config['show_address'] );
+        $config['searchable'] = $truthy( $config['searchable'] );
         foreach ( array( 'province_required','ward_required','address_required' ) as $key ) {
             $config[ $key ] = $truthy( $config[ $key ] === '' ? $config['required'] : $config[ $key ] );
         }

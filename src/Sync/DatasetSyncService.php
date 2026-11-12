@@ -33,6 +33,9 @@ final class DatasetSyncService {
             }
             if ( ! DatasetPackage::valid( $package ) ) { $result = new DatasetSyncResult( DatasetSyncResult::VALIDATION_ERROR ); return $result; }
             $m = $package['manifest']; $new = $m['dataset_version']; $source = $m['source'];
+            $snapshot = ( new DatasetIntegrityAuditor() )->snapshot( $old );
+            $changes = ! is_wp_error( $snapshot ) && ( new DatasetValidator() )->validate( $snapshot )
+                ? ( new \Tunlamweb\VNAddressPro\Data\DatasetDiff() )->compare( $snapshot, $package['dataset'] ) : array();
             $current = $metadata->read(); $comparison = DatasetValidator::valid_version( $old ) ? strcmp( $new, $old ) : 1;
             $status = DatasetSyncResult::UPDATE_AVAILABLE;
             if ( $comparison < 0 && ! ( $mode === 'bundle' && $confirm_downgrade ) ) {
@@ -49,9 +52,9 @@ final class DatasetSyncService {
                 if ( $mode === 'bundle' || ( $mode === 'repair' && $equal ) ) { $status = DatasetSyncResult::UPDATE_AVAILABLE; }
             }
             if ( $mode === 'check' || $status !== DatasetSyncResult::UPDATE_AVAILABLE ) {
-                $result = new DatasetSyncResult( $status, $source, $old, $new ); return $result;
+                $result = new DatasetSyncResult( $status, $source, $old, $new, $changes ); return $result;
             }
-            $before = ( new DatasetIntegrityAuditor() )->snapshot( $old );
+            $before = $snapshot;
             $old_codes = is_wp_error( $before ) ? array() : array_column( $before['provinces'], 'code' );
             $import = ( new DatasetInstaller() )->install_package( $package, $mode === 'repair' || $mode === 'bundle', static function () use ( $lock, $lease, $old ) {
                 global $wpdb;
@@ -61,7 +64,7 @@ final class DatasetSyncService {
             if ( is_wp_error( $import ) ) {
                 $result = new DatasetSyncResult( $import->get_error_code() === 'vnap_dataset_verify' ? DatasetSyncResult::VERIFY_ERROR : DatasetSyncResult::IMPORT_ERROR, $source, $old, $new ); return $result;
             }
-            $result = new DatasetSyncResult( DatasetSyncResult::SUCCESS, $source, $old, $new );
+            $result = new DatasetSyncResult( DatasetSyncResult::SUCCESS, $source, $old, $new, $changes );
             ( new RemoteCacheCleaner() )->clear( $old_codes );
             delete_option( DatasetMetadata::AUDIT );
             try { do_action( 'vnap_dataset_updated', $old, $new ); }

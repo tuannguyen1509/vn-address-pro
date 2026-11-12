@@ -67,6 +67,7 @@ final class Plugin {
             $this->forms = new \Tunlamweb\VNAddressPro\Integrations\Forms\FormIntegrationRegistry();
             $this->forms->register( new \Tunlamweb\VNAddressPro\Integrations\Forms\ContactForm7\ContactForm7Integration() );
             $this->forms->register( new \Tunlamweb\VNAddressPro\Integrations\Forms\FluentForms\FluentFormsIntegration() );
+            $this->forms->register( new \Tunlamweb\VNAddressPro\Integrations\Forms\WPForms\WPFormsIntegration() );
             do_action( 'vnap_form_adapters', $this->forms );
         }
         return $this->forms;

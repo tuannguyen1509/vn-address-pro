@@ -1,5 +1,7 @@
 # Core and regression checks
 
+Version 2.0.2: on disposable sites run `wp eval-file wp-content/plugins/vn-address-pro/tests/Unit/DatasetDiffTest.php` (15 checks), and with WPForms Lite 2.0.3.1 active run `wp eval-file wp-content/plugins/vn-address-pro/tests/WPForms/IntegrationTest.php` (22 checks). See [WPForms scope](../docs/wpforms.md) and [dataset change-summary validation](../docs/dataset-change-summary.md). Notification browser checks must intercept mail; never use merchant forms/data.
+
 Shipping configuration conversion: run `wp eval-file wp-content/plugins/vn-address-pro/tests/Migration/ShippingConfigurationTest.php` only on a disposable WooCommerce installation. It creates a synthetic zone/method, restores owned settings and exercises atomic rollback. See [workflow, safety, limits and results](../docs/shipping-configuration.md).
 
 Use a disposable WordPress database, English locale and PHP with mbstring. Do not run these tests against a production site: they temporarily replace two address transients and exercise the version marker. Existing cache values are restored with a fresh 24-hour TTL.

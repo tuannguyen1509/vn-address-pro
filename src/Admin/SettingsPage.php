@@ -123,7 +123,15 @@ final class SettingsPage {
                 __( 'Last Successful Sync', 'vn-address-pro' ) => $this->date( $s['last_success']['at'] ?? null ),
                 __( 'Last Failure', 'vn-address-pro' ) => $s['last_failure']['status'] ?? '',
                 __( 'Remote Provider Status (last observation)', 'vn-address-pro' ) => $s['last_check']['status'] ?? $last['status'] ?? __( 'Not checked', 'vn-address-pro' ),
+                __( 'Last Update Check', 'vn-address-pro' ) => $this->date( $s['last_check']['at'] ?? null ),
             );
+            if ( $tab === 'data' && isset( $s['last_check']['changes'] ) && is_array( $s['last_check']['changes'] ) ) {
+                echo '<h3>' . esc_html__( 'Changes observed at last update check', 'vn-address-pro' ) . '</h3><p>' . esc_html__( 'Counts compare the installed dataset with the validated API response at the time of the check. They do not prove upstream completeness or change customer/order addresses.', 'vn-address-pro' ) . '</p>';
+                $labels = array( 'provinces_before' => __( 'Installed provinces', 'vn-address-pro' ), 'provinces_after' => __( 'Candidate provinces', 'vn-address-pro' ), 'wards_before' => __( 'Installed wards', 'vn-address-pro' ), 'wards_after' => __( 'Candidate wards', 'vn-address-pro' ), 'provinces_added' => __( 'Provinces added', 'vn-address-pro' ), 'provinces_removed' => __( 'Provinces removed', 'vn-address-pro' ), 'provinces_renamed' => __( 'Provinces renamed', 'vn-address-pro' ), 'wards_added' => __( 'Wards added', 'vn-address-pro' ), 'wards_removed' => __( 'Wards removed', 'vn-address-pro' ), 'wards_renamed' => __( 'Wards renamed', 'vn-address-pro' ), 'wards_reparented' => __( 'Wards with changed parent province', 'vn-address-pro' ) );
+                $changes = array();
+                foreach ( $labels as $key => $label ) { if ( isset( $s['last_check']['changes'][ $key ] ) && is_int( $s['last_check']['changes'][ $key ] ) ) { $changes[ $label ] = $s['last_check']['changes'][ $key ]; } }
+                $this->rows( $changes );
+            }
             if ( $tab === 'status' ) {
                 global $wp_version, $wpdb;
                 $rows += \Tunlamweb\VNAddressPro\Integrations\WooCommerce\Compatibility::status();

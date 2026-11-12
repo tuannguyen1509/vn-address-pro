@@ -1,5 +1,9 @@
 # VN Address Pro — Checklist khi tiếp tục phát triển
 
+> Cập nhật 05/11/2026 — **2.0.2**: đã bổ sung [WPForms Lite](wpforms.md), tìm kiếm không dấu/mobile cho component và [so sánh dataset trước cập nhật](dataset-change-summary.md). Các mục WPForms bên dưới là backlog lịch sử; Pro/AJAX/popup/repeater vẫn chưa chứng nhận. Giữ nguyên địa chỉ cũ.
+
+> Cập nhật 05/11/2026: phiên bản hiện tại **2.0.1**; phát triển đã tiếp tục theo yêu cầu tác giả. Sau mỗi đợt sửa code phải cập nhật version và changelog theo [AGENTS.md](../AGENTS.md). Những dòng tạm ngưng và version 2.0.0 bên dưới là ghi chú bàn giao lịch sử. Dữ liệu địa chỉ cũ được giữ nguyên; không tiếp tục adapter chuyển mã khách hàng/đơn cũ ở thời điểm này.
+
 > **Dự án đang tạm ngưng code theo yêu cầu của tác giả.**
 > Ngày ghi chú: **27/10/2026**. Mốc hiện tại: **hoàn thành Phase 12**.
 > File này là bàn giao để đọc khi quay lại; không phải yêu cầu tự động triển khai phase tiếp theo.
