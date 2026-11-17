@@ -1,0 +1,836 @@
+msgid ""
+msgstr "Project-Id-Version: VN Address Pro 2.0.4\nLanguage: vi\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
+
+msgid "%1$s: %2$s"
+msgstr "%1$s: %2$s"
+
+msgid "1. Scan → 2. Review → 3. Confirm selected changes"
+msgstr "1. Quét dữ liệu → 2. Xem trước → 3. Xác nhận các mục đã chọn"
+
+msgid "A dataset operation is already running."
+msgstr "Một tác vụ dữ liệu đang chạy. Vui lòng thử lại sau."
+
+msgid "Absent or unsupported"
+msgstr "Chưa cài hoặc chưa được hỗ trợ"
+
+msgid "Access denied."
+msgstr "Bạn không có quyền truy cập."
+
+msgid "Active"
+msgstr "Đang hoạt động"
+
+msgid "Additional review required"
+msgstr "Cần kiểm tra thêm"
+
+msgid "Address Model"
+msgstr "Mô hình địa chỉ"
+
+msgid "Address data is being refreshed. Please try again shortly."
+msgstr "Dữ liệu địa chỉ đang được làm mới. Vui lòng thử lại sau."
+
+msgid "Address data is temporarily unavailable."
+msgstr "Tạm thời không thể tải dữ liệu địa chỉ."
+
+msgid "Address dataset installation failed"
+msgstr "Không thể cài dữ liệu địa chỉ"
+
+msgid "Address field"
+msgstr "Trường địa chỉ"
+
+msgid "Address field configuration or data is unavailable."
+msgstr "Cấu hình hoặc dữ liệu trường địa chỉ chưa sẵn sàng."
+
+msgid "Address fields are misconfigured. Use unique field names and link each ward to a province field."
+msgstr "Cấu hình trường địa chỉ chưa đúng. Hãy dùng tên riêng cho từng trường và liên kết trường xã với trường tỉnh tương ứng."
+
+msgid "Address installation requires transactional InnoDB tables, including WordPress options."
+msgstr "Cài dữ liệu địa chỉ cần các bảng InnoDB hỗ trợ giao dịch, bao gồm bảng tùy chọn WordPress."
+
+msgid "Address type"
+msgstr "Loại địa chỉ"
+
+msgid "Administrative unit type changed"
+msgstr "Loại đơn vị hành chính đã thay đổi"
+
+msgid "Advanced"
+msgstr "Nâng cao"
+
+msgid "Advanced tools"
+msgstr "Công cụ nâng cao"
+
+msgid "Already standardized"
+msgstr "Đã được chuẩn hóa"
+
+msgid "Also allow reviewed MEDIUM confidence selections."
+msgstr "Cho phép thêm các mục có độ tin cậy trung bình đã được kiểm tra."
+
+msgid "Also canonicalize selected historical order state/city/name snapshots. Default: codes only."
+msgstr "Chuẩn hóa cả tên tỉnh, xã trong các đơn cũ được chọn. Mặc định chỉ bổ sung mã."
+
+msgid "Applied"
+msgstr "Đã áp dụng"
+
+msgid "Applied configuration changes: %d. Previously applied previews are not applied twice."
+msgstr "Đã áp dụng %d thay đổi cấu hình. Bản xem trước đã xử lý sẽ không được áp dụng lần nữa."
+
+msgid "Apply selected changes"
+msgstr "Áp dụng các mục đã chọn"
+
+msgid "Apply selected configuration changes"
+msgstr "Áp dụng cấu hình đã chọn"
+
+msgid "Automatic Dataset Updates"
+msgstr "Tự động cập nhật dữ liệu"
+
+msgid "Available — explicit preview/apply only"
+msgstr "Sẵn sàng — chỉ chạy khi xem trước và xác nhận"
+
+msgid "Batch size (maximum 50 entities)"
+msgstr "Số bản ghi mỗi lượt (tối đa 50)"
+
+msgid "Before → After"
+msgstr "Trước → Sau"
+
+msgid "Billing"
+msgstr "Thanh toán"
+
+msgid "Billing + Shipping"
+msgstr "Thanh toán và giao hàng"
+
+msgid "Candidate provinces"
+msgstr "Tỉnh/thành trong bản mới"
+
+msgid "Candidate wards"
+msgstr "Phường/xã trong bản mới"
+
+msgid "Changes observed at last update check"
+msgstr "Thay đổi trong lần kiểm tra cập nhật gần nhất"
+
+msgid "Check address data"
+msgstr "Kiểm tra dữ liệu"
+
+msgid "Check for Updates"
+msgstr "Kiểm tra cập nhật"
+
+msgid "Checkout Block"
+msgstr "Thanh toán dạng khối"
+
+msgid "Checkout Blocks"
+msgstr "Thanh toán dạng khối"
+
+msgid "Checkout Type"
+msgstr "Kiểu trang thanh toán"
+
+msgid "Choose how often to check and update province and ward data. This does not update old customer or order addresses."
+msgstr "Chọn lịch cập nhật danh sách tỉnh, phường/xã. Lịch này không sửa địa chỉ của khách hàng hay đơn hàng cũ."
+
+msgid "Classic Checkout"
+msgstr "Thanh toán truyền thống"
+
+msgid "Clear Remote Cache (retain LKG)"
+msgstr "Xóa bộ nhớ đệm API (giữ bản hợp lệ gần nhất)"
+
+msgid "Confidence / Status"
+msgstr "Độ tin cậy / Trạng thái"
+
+msgid "Confidence: HIGH only by default. Nothing is selected automatically. Low/ambiguous results cannot be applied."
+msgstr "Mặc định chỉ cho phép độ tin cậy cao. Không có mục nào được chọn sẵn. Kết quả có độ tin cậy thấp hoặc chưa rõ không thể áp dụng."
+
+msgid "Configuration"
+msgstr "Cấu hình"
+
+msgid "Configuration conversion could not proceed. No partial batch is saved. Check permissions, dataset and selections, then scan again."
+msgstr "Không thể chuyển đổi cấu hình. Không lưu một phần kết quả. Hãy kiểm tra quyền, dữ liệu và các mục đã chọn rồi quét lại."
+
+msgid "Could not save"
+msgstr "Không thể lưu"
+
+msgid "Country is missing; confirmation required"
+msgstr "Thiếu quốc gia; cần xác nhận"
+
+msgid "Counts compare the installed dataset with the validated API response at the time of the check. They do not prove upstream completeness or change customer/order addresses."
+msgstr "So sánh dữ liệu đang cài với phản hồi API hợp lệ tại thời điểm kiểm tra. Các số liệu này không xác nhận tính đầy đủ của nguồn và không thay đổi địa chỉ khách hàng hay đơn hàng."
+
+msgid "Current identifier"
+msgstr "Mã hiện tại"
+
+msgid "Current state / city / codes"
+msgstr "Tỉnh / xã / mã hiện tại"
+
+msgid "Current. No update required."
+msgstr "Dữ liệu hiện tại không cần cập nhật."
+
+msgid "Customer"
+msgstr "Khách hàng"
+
+msgid "Customers + Orders"
+msgstr "Khách hàng và đơn hàng"
+
+msgid "Customers choose a province, then a ward. No district is needed. Existing customer and order addresses stay as they are."
+msgstr "Khách hàng chọn tỉnh/thành phố, sau đó chọn phường/xã. Không cần chọn quận/huyện. Địa chỉ khách hàng và đơn hàng cũ được giữ nguyên."
+
+msgid "Customers only"
+msgstr "Chỉ khách hàng"
+
+msgid "Daily"
+msgstr "Hằng ngày"
+
+msgid "Data"
+msgstr "Dữ liệu"
+
+msgid "Database Schema Version"
+msgstr "Phiên bản cấu trúc cơ sở dữ liệu"
+
+msgid "Dataset Checksum"
+msgstr "Mã kiểm tra dữ liệu"
+
+msgid "Dataset Missing"
+msgstr "Chưa có dữ liệu"
+
+msgid "Dataset Schema Version"
+msgstr "Phiên bản cấu trúc bộ dữ liệu"
+
+msgid "Dataset Version"
+msgstr "Phiên bản dữ liệu"
+
+msgid "Dataset published successfully."
+msgstr "Đã cập nhật dữ liệu thành công."
+
+msgid "Dataset published successfully. Source: %s."
+msgstr "Đã cập nhật dữ liệu thành công. Nguồn: %s."
+
+msgid "Dataset validation passed."
+msgstr "Dữ liệu đã vượt qua kiểm tra toàn vẹn."
+
+msgid "Dataset version:"
+msgstr "Phiên bản dữ liệu:"
+
+msgid "Disabled"
+msgstr "Đã tắt"
+
+msgid "Disabled; external runner required"
+msgstr "Đã tắt; cần lịch chạy từ hệ thống"
+
+msgid "Dry run: scan and preview perform no writes."
+msgstr "Chỉ xem trước: quét và xem kết quả không ghi dữ liệu."
+
+msgid "Enable an integration to use province and ward fields there. A compatible plugin must also be installed and active."
+msgstr "Bật tích hợp cho nơi bạn muốn thêm bộ chọn tỉnh, phường/xã. Plugin tương ứng cần được cài đặt, kích hoạt và có phiên bản được hỗ trợ."
+
+msgid "Enabled"
+msgstr "Đang bật"
+
+msgid "Error"
+msgstr "Có lỗi"
+
+msgid "Every 30 days"
+msgstr "Mỗi 30 ngày"
+
+msgid "Exact Name Attribute of the VN Province field in this form. Update this reference when renaming that field."
+msgstr "Nhập đúng thuộc tính tên của trường tỉnh trong form này. Cập nhật liên kết nếu đổi tên trường tỉnh."
+
+msgid "Field name"
+msgstr "Tên trường"
+
+msgid "Form integration:"
+msgstr "Tích hợp biểu mẫu:"
+
+msgid "General"
+msgstr "Tổng quan"
+
+msgid "Generated At (UTC)"
+msgstr "Thời điểm tạo dữ liệu (UTC)"
+
+msgid "HPOS Enabled"
+msgstr "Lưu trữ đơn hàng HPOS"
+
+msgid "Healthy"
+msgstr "Hoạt động tốt"
+
+msgid "High confidence"
+msgstr "Độ tin cậy cao"
+
+msgid "Historical display address retained"
+msgstr "Giữ nguyên tên địa chỉ trong đơn cũ"
+
+msgid "Historical district requires review"
+msgstr "Quận/huyện cũ cần được kiểm tra"
+
+msgid "I reviewed the selected changes and request Apply."
+msgstr "Tôi đã kiểm tra và xác nhận áp dụng các thay đổi đã chọn."
+
+msgid "I reviewed the selected province mappings and geographic coverage, and request Apply."
+msgstr "Tôi đã kiểm tra mã tỉnh tương ứng, phạm vi địa lý và xác nhận áp dụng các mục đã chọn."
+
+msgid "I understand selected historical orders will be modified."
+msgstr "Tôi hiểu rằng các đơn hàng cũ được chọn sẽ bị thay đổi."
+
+msgid "I understand that reinstalling the bundle will downgrade this newer dataset."
+msgstr "Tôi hiểu rằng cài lại dữ liệu đóng gói sẽ thay thế bộ dữ liệu mới hơn đang có."
+
+msgid "Import failed. Existing data was preserved."
+msgstr "Nhập dữ liệu thất bại. Dữ liệu hiện có được giữ nguyên."
+
+msgid "Inactive"
+msgstr "Chưa hoạt động"
+
+msgid "Inactive; core remains independent"
+msgstr "Chưa hoạt động; chức năng địa chỉ vẫn chạy độc lập"
+
+msgid "InnoDB — OK"
+msgstr "InnoDB — Đạt"
+
+msgid "Insert Tag"
+msgstr "Chèn thẻ"
+
+msgid "Install or activate a compatible plugin to use this integration."
+msgstr "Cần cài và kích hoạt phiên bản plugin được hỗ trợ để sử dụng."
+
+msgid "Installed At"
+msgstr "Thời điểm cài dữ liệu"
+
+msgid "Installed provinces"
+msgstr "Tỉnh/thành đang cài"
+
+msgid "Installed wards"
+msgstr "Phường/xã đang cài"
+
+msgid "Integration settings saved."
+msgstr "Đã lưu thiết lập tích hợp."
+
+msgid "Integrity Issues"
+msgstr "Vấn đề toàn vẹn dữ liệu"
+
+msgid "Integrity Warning"
+msgstr "Cần kiểm tra toàn vẹn"
+
+msgid "Integrity warning. Review the validation report in Tools."
+msgstr "Dữ liệu có vấn đề cần kiểm tra. Xem báo cáo tại Nâng cao → Mở công cụ sửa dữ liệu."
+
+msgid "Invalid address field configuration."
+msgstr "Cấu hình trường địa chỉ không hợp lệ."
+
+msgid "Invalid configuration permission or nonce."
+msgstr "Quyền truy cập hoặc mã xác thực cấu hình không hợp lệ."
+
+msgid "Invalid input data"
+msgstr "Dữ liệu đầu vào không hợp lệ"
+
+msgid "Invalid metadata"
+msgstr "Thông tin dữ liệu không hợp lệ"
+
+msgid "Invalid migration permission or nonce."
+msgstr "Quyền truy cập hoặc mã xác thực chuyển đổi không hợp lệ."
+
+msgid "Keep address data up to date"
+msgstr "Lịch cập nhật địa chỉ"
+
+msgid "Last Failure"
+msgstr "Lỗi gần nhất"
+
+msgid "Last Successful Sync"
+msgstr "Đồng bộ thành công gần nhất"
+
+msgid "Last Sync"
+msgstr "Lần đồng bộ gần nhất"
+
+msgid "Last Sync Status"
+msgstr "Kết quả đồng bộ gần nhất"
+
+msgid "Last Update Check"
+msgstr "Lần kiểm tra cập nhật gần nhất"
+
+msgid "Last Validation"
+msgstr "Lần kiểm tra toàn vẹn gần nhất"
+
+msgid "Legacy province code requires review"
+msgstr "Mã tỉnh cũ cần được kiểm tra"
+
+msgid "Local Repository"
+msgstr "Kho dữ liệu nội bộ"
+
+msgid "Low confidence"
+msgstr "Độ tin cậy thấp"
+
+msgid "Manage province and ward data, form integrations and shipping configuration in one place."
+msgstr "Quản lý dữ liệu tỉnh, phường/xã, tích hợp biểu mẫu và cấu hình giao hàng tại một nơi."
+
+msgid "Matched province / ward"
+msgstr "Tỉnh / xã tìm được"
+
+msgid "Medium confidence"
+msgstr "Độ tin cậy trung bình"
+
+msgid "Migration"
+msgstr "Chuyển đổi địa chỉ"
+
+msgid "Migration batch"
+msgstr "Lượt chuyển đổi"
+
+msgid "Migration cannot continue. Check permission, confirmation and selection; repair the local dataset if needed, then scan again."
+msgstr "Không thể tiếp tục chuyển đổi. Hãy kiểm tra quyền, xác nhận và các mục đã chọn; sửa dữ liệu nội bộ nếu cần rồi quét lại."
+
+msgid "Migration module"
+msgstr "Công cụ chuyển đổi địa chỉ"
+
+msgid "Migration requires site and WooCommerce management permissions."
+msgstr "Chuyển đổi địa chỉ cần quyền quản trị website và WooCommerce."
+
+msgid "Monthly (30 days)"
+msgstr "Hằng tháng (30 ngày)"
+
+msgid "Multiple possible matches"
+msgstr "Có nhiều kết quả phù hợp"
+
+msgid "Name matches do not prove that historical boundaries are equivalent. Review geographic coverage and overlapping zones before selecting changes. Keep a database backup; automatic rollback is not provided."
+msgstr "Trùng tên không có nghĩa là ranh giới địa lý cũ và mới giống nhau. Hãy kiểm tra phạm vi và các vùng giao hàng chồng lấn trước khi chọn. Cần có bản sao lưu vì chưa hỗ trợ hoàn tác tự động."
+
+msgid "Needs Repair"
+msgstr "Cần sửa dữ liệu"
+
+msgid "Needs Repair: transactional InnoDB required"
+msgstr "Cần sửa: bảng phải dùng InnoDB hỗ trợ giao dịch"
+
+msgid "Next Sync"
+msgstr "Lần đồng bộ tiếp theo"
+
+msgid "No"
+msgstr "Không"
+
+msgid "No legacy Vietnamese province identifiers found in the scanned configuration."
+msgstr "Không tìm thấy mã tỉnh cũ trong cấu hình vừa quét."
+
+msgid "Not checked"
+msgstr "Chưa kiểm tra"
+
+msgid "Not installed"
+msgstr "Chưa cài đặt"
+
+msgid "Not installed or inactive"
+msgstr "Chưa cài đặt hoặc chưa bật"
+
+msgid "Not matched"
+msgstr "Chưa tìm được kết quả"
+
+msgid "Not recorded"
+msgstr "Chưa có thông tin"
+
+msgid "Or last N calendar days including today (orders)"
+msgstr "Hoặc số ngày gần đây, tính cả hôm nay (đơn hàng)"
+
+msgid "Order"
+msgstr "Đơn hàng"
+
+msgid "Orders from"
+msgstr "Đơn hàng từ ngày"
+
+msgid "Orders only"
+msgstr "Chỉ đơn hàng"
+
+msgid "Outside Vietnam"
+msgstr "Địa chỉ ngoài Việt Nam"
+
+msgid "PHP Version"
+msgstr "Phiên bản PHP"
+
+msgid "Persistent Object Cache"
+msgstr "Bộ nhớ đệm đối tượng lâu dài"
+
+msgid "Please enter a valid value for this address field."
+msgstr "Vui lòng nhập giá trị địa chỉ hợp lệ."
+
+msgid "Please select a valid province and ward."
+msgstr "Vui lòng chọn tỉnh và phường/xã hợp lệ."
+
+msgid "Please select an address option."
+msgstr "Vui lòng chọn một địa chỉ."
+
+msgid "Plugin Version"
+msgstr "Phiên bản plugin"
+
+msgid "Plugin requirements not met"
+msgstr "Chưa đáp ứng yêu cầu của plugin"
+
+msgid "Prepared"
+msgstr "Đã chuẩn bị"
+
+msgid "Preview is invalid, expired or belongs to another user/site. Scan again."
+msgstr "Bản xem trước không hợp lệ, hết hạn hoặc thuộc người dùng/website khác. Vui lòng quét lại."
+
+msgid "Preview is too large. Reduce the batch size."
+msgstr "Bản xem trước quá lớn. Vui lòng giảm số bản ghi mỗi lượt."
+
+msgid "Preview — no changes saved"
+msgstr "Xem trước — chưa lưu thay đổi"
+
+msgid "Province Count"
+msgstr "Số tỉnh / thành phố"
+
+msgid "Province Field"
+msgstr "Trường tỉnh / thành phố"
+
+msgid "Province field name"
+msgstr "Tên trường tỉnh / thành phố"
+
+msgid "Province metadata conflicts with the address"
+msgstr "Mã tỉnh lưu kèm không khớp địa chỉ"
+
+msgid "Provinces added"
+msgstr "Tỉnh/thành được thêm"
+
+msgid "Provinces removed"
+msgstr "Tỉnh/thành bị bỏ"
+
+msgid "Provinces renamed"
+msgstr "Tỉnh/thành đổi tên"
+
+msgid "Ready for reviewed migration"
+msgstr "Có thể chuyển sau khi kiểm tra"
+
+msgid "Recent applied batches (rollback foundation)"
+msgstr "Các lượt đã áp dụng gần đây (nhật ký trước/sau)"
+
+msgid "Recent configuration batches"
+msgstr "Lịch sử thay đổi cấu hình"
+
+msgid "Reinstall Bundled Dataset"
+msgstr "Cài lại dữ liệu đóng gói"
+
+msgid "Remote Provider Status (last observation)"
+msgstr "Trạng thái nguồn API gần nhất"
+
+msgid "Remote active, negative and failure caches cleared for installed province codes. Last-known-good data was retained."
+msgstr "Đã xóa bộ nhớ đệm API và các kết quả lỗi của mã tỉnh đang cài. Bản dữ liệu hợp lệ gần nhất được giữ nguyên."
+
+msgid "Remote dataset is older; no downgrade performed."
+msgstr "Dữ liệu nguồn cũ hơn; không thực hiện hạ phiên bản."
+
+msgid "Repair Dataset"
+msgstr "Sửa dữ liệu"
+
+msgid "Repair and maintenance"
+msgstr "Mở công cụ sửa dữ liệu"
+
+msgid "Repair validates current data first, then uses a valid remote candidate or the bundle. Ordinary repair never downgrades. Reinstall uses only the bundled snapshot."
+msgstr "Công cụ sẽ kiểm tra dữ liệu hiện tại trước, sau đó dùng bản API hợp lệ hoặc bản đóng gói để sửa. Thao tác sửa không hạ phiên bản. Cài lại chỉ sử dụng dữ liệu đi kèm plugin."
+
+msgid "Required field"
+msgstr "Trường bắt buộc"
+
+msgid "Requires supported WooCommerce"
+msgstr "Cần phiên bản WooCommerce được hỗ trợ"
+
+msgid "Retry loading wards"
+msgstr "Thử tải lại phường/xã"
+
+msgid "Review legacy province identifiers in shipping zones and the store address. Scanning saves no changes. Rates, methods, zone order, tax rules and customer/order addresses are preserved."
+msgstr "Kiểm tra mã tỉnh cũ trong vùng giao hàng và địa chỉ cửa hàng. Quét không lưu thay đổi. Phí, phương thức, thứ tự vùng, thuế và địa chỉ khách hàng/đơn hàng được giữ nguyên."
+
+msgid "Review old addresses"
+msgstr "Xem trước địa chỉ cũ"
+
+msgid "Review setup"
+msgstr "Xem thiết lập"
+
+msgid "Review shipping setup"
+msgstr "Kiểm tra cấu hình giao hàng"
+
+msgid "Save Changes"
+msgstr "Lưu thay đổi"
+
+msgid "Save integration settings"
+msgstr "Lưu tích hợp"
+
+msgid "Scan (dry run)"
+msgstr "Quét và xem trước"
+
+msgid "Scan configuration (dry run)"
+msgstr "Quét cấu hình — chỉ xem trước"
+
+msgid "Scan next batch (dry run)"
+msgstr "Quét lượt tiếp theo — chỉ xem trước"
+
+msgid "Scan scope / Dry run"
+msgstr "Phạm vi quét / Xem trước"
+
+msgid "Scheduled Sync"
+msgstr "Lịch đồng bộ"
+
+msgid "Select"
+msgstr "Chọn"
+
+msgid "Select %1$s %2$d %3$s"
+msgstr "Chọn %1$s %2$d %3$s"
+
+msgid "Select %s"
+msgstr "Chọn %s"
+
+msgid "Setup"
+msgstr "Thiết lập"
+
+msgid "Shipping"
+msgstr "Giao hàng"
+
+msgid "Shipping Configuration"
+msgstr "Cấu hình giao hàng"
+
+msgid "Single-ward lookup requires the local repository."
+msgstr "Tra cứu từng phường/xã cần kho dữ liệu nội bộ."
+
+msgid "Site and WooCommerce management permissions are required."
+msgstr "Cần quyền quản trị website và WooCommerce."
+
+msgid "Skipped: data changed"
+msgstr "Bỏ qua: dữ liệu đã thay đổi"
+
+msgid "Skipped: insufficient confidence"
+msgstr "Bỏ qua: chưa đủ độ tin cậy"
+
+msgid "Source"
+msgstr "Nguồn dữ liệu"
+
+msgid "Status"
+msgstr "Trạng thái"
+
+msgid "Store province"
+msgstr "Tỉnh/thành của cửa hàng"
+
+msgid "Suggested identifier"
+msgstr "Mã đề xuất"
+
+msgid "Supported"
+msgstr "Được hỗ trợ"
+
+msgid "Sync Now"
+msgstr "Đồng bộ ngay"
+
+msgid "Syncing"
+msgstr "Đang đồng bộ"
+
+msgid "System Status"
+msgstr "Trạng thái hệ thống"
+
+msgid "Technical details"
+msgstr "Xem thông tin kỹ thuật"
+
+msgid "The address candidate failed validation."
+msgstr "Bản dữ liệu địa chỉ mới không vượt qua kiểm tra."
+
+msgid "The address data request failed."
+msgstr "Yêu cầu tải dữ liệu địa chỉ thất bại."
+
+msgid "The address provider returned an HTTP error."
+msgstr "Nguồn dữ liệu địa chỉ trả về lỗi HTTP."
+
+msgid "The address provider returned an invalid payload."
+msgstr "Nguồn địa chỉ trả về dữ liệu không hợp lệ."
+
+msgid "The bundle is older. Explicit downgrade confirmation is required."
+msgstr "Bản đóng gói cũ hơn. Cần xác nhận rõ ràng để hạ phiên bản dữ liệu."
+
+msgid "The bundled address dataset or manifest failed integrity validation."
+msgstr "Dữ liệu đóng gói hoặc tệp mô tả không vượt qua kiểm tra toàn vẹn."
+
+msgid "The candidate dataset failed validation."
+msgstr "Bản dữ liệu mới không vượt qua kiểm tra."
+
+msgid "The dataset is healthy; no repair is needed."
+msgstr "Dữ liệu đang hoạt động tốt, không cần sửa."
+
+msgid "The dataset operation needs attention."
+msgstr "Tác vụ dữ liệu cần được kiểm tra."
+
+msgid "The installed address schema is newer than this plugin supports."
+msgstr "Cấu trúc dữ liệu đang cài mới hơn phiên bản plugin hỗ trợ."
+
+msgid "The latest 20 batches retain before/after administrative fields. Rollback execution and exports are deferred."
+msgstr "Lưu thông tin địa chỉ trước/sau của 20 lượt gần nhất. Chưa có chức năng hoàn tác hoặc xuất báo cáo trong màn hình này."
+
+msgid "The local address dataset could not be installed. Existing data has been preserved."
+msgstr "Không thể cài dữ liệu địa chỉ nội bộ. Dữ liệu hiện có được giữ nguyên."
+
+msgid "The local address dataset is unavailable."
+msgstr "Kho dữ liệu địa chỉ nội bộ chưa sẵn sàng."
+
+msgid "The local address schema could not be installed."
+msgstr "Không thể cài cấu trúc dữ liệu địa chỉ nội bộ."
+
+msgid "The provider address structure is invalid."
+msgstr "Cấu trúc dữ liệu địa chỉ từ nguồn không hợp lệ."
+
+msgid "The remote dataset could not be downloaded."
+msgstr "Không thể tải dữ liệu từ API."
+
+msgid "The requested address record was not found."
+msgstr "Không tìm thấy địa chỉ được yêu cầu."
+
+msgid "The requested province was not found."
+msgstr "Không tìm thấy tỉnh/thành được yêu cầu."
+
+msgid "The staged dataset failed verification. Existing data has been preserved."
+msgstr "Bản dữ liệu chuẩn bị cài không vượt qua xác minh. Dữ liệu hiện có được giữ nguyên."
+
+msgid "This check does not change your address data."
+msgstr "Thao tác này chỉ kiểm tra, không thay đổi dữ liệu địa chỉ."
+
+msgid "This field is required."
+msgstr "Đây là trường bắt buộc."
+
+msgid "This tool can modify customer and historical order addresses. Always review the preview before applying."
+msgstr "Công cụ này có thể sửa địa chỉ khách hàng và đơn hàng cũ. Luôn kiểm tra bản xem trước trước khi áp dụng."
+
+msgid "Tools"
+msgstr "Công cụ"
+
+msgid "Turning an integration off stops the new address fields there. Saved addresses are kept."
+msgstr "Khi tắt tích hợp, bộ chọn địa chỉ của VN Address Pro sẽ ngừng hoạt động tại đó. Địa chỉ đã lưu vẫn được giữ nguyên."
+
+msgid "Two levels"
+msgstr "Hai cấp"
+
+msgid "Type / ID / Address"
+msgstr "Loại / ID / Địa chỉ"
+
+msgid "Unavailable; requires supported WooCommerce Blocks APIs"
+msgstr "Chưa sẵn sàng; cần API WooCommerce Blocks được hỗ trợ"
+
+msgid "Unchanged"
+msgstr "Không thay đổi"
+
+msgid "Unresolved — manual review required"
+msgstr "Chưa xác định — cần kiểm tra thủ công"
+
+msgid "Unsupported"
+msgstr "Chưa được hỗ trợ"
+
+msgid "Unsupported WooCommerce version"
+msgstr "Phiên bản WooCommerce chưa được hỗ trợ"
+
+msgid "Update Available"
+msgstr "Có bản cập nhật"
+
+msgid "Update address data"
+msgstr "Cập nhật danh sách địa chỉ"
+
+msgid "Update available."
+msgstr "Có bản dữ liệu mới."
+
+msgid "Update schedule saved."
+msgstr "Đã lưu lịch cập nhật."
+
+msgid "Usable"
+msgstr "Sẵn sàng sử dụng"
+
+msgid "Use these tools only when troubleshooting. For everyday use, the Overview and Setup pages are enough."
+msgstr "Các công cụ dưới đây dành cho việc kiểm tra và xử lý sự cố. Thông thường, bạn chỉ cần dùng Tổng quan và Thiết lập."
+
+msgid "Use unique names. Ward must reference the exact name of its Province field. Ordinary mail-tags display names; [_vnap_code_FIELD] displays the canonical code."
+msgstr "Dùng tên riêng cho từng trường. Trường xã phải liên kết đúng tên trường tỉnh. Thẻ email thông thường hiển thị tên; [_vnap_code_FIELD] hiển thị mã chuẩn."
+
+msgid "VN Address"
+msgstr "VN Address"
+
+msgid "VN Address Pro could not install its bundled local dataset. Existing local data is preserved; remote fallback remains available. Check the plugin package and database permissions."
+msgstr "VN Address Pro không thể cài dữ liệu đóng gói. Dữ liệu nội bộ hiện có được giữ nguyên; vẫn có thể dùng nguồn API dự phòng. Hãy kiểm tra gói plugin và quyền cơ sở dữ liệu."
+
+msgid "VN Address Pro could not start. Please reinstall a complete plugin package."
+msgstr "VN Address Pro không thể khởi động. Vui lòng cài lại gói plugin đầy đủ."
+
+msgid "VN Address Pro dataset requires attention. Open Settings → VN Address → Tools."
+msgstr "Dữ liệu VN Address Pro cần được kiểm tra. Mở Cài đặt → VN Address → Tổng quan rồi bấm Kiểm tra dữ liệu."
+
+msgid "VN Address Pro requires PHP %1$s or newer and WordPress %2$s or newer. Plugin core has not been loaded."
+msgstr "VN Address Pro cần PHP %1$s trở lên và WordPress %2$s trở lên. Chức năng chính của plugin chưa được tải."
+
+msgid "VN Address field"
+msgstr "Trường địa chỉ Việt Nam"
+
+msgid "VN Address line"
+msgstr "Dòng địa chỉ chi tiết"
+
+msgid "VN Address settings"
+msgstr "Cài đặt VN Address"
+
+msgid "VN Province"
+msgstr "Tỉnh / Thành phố Việt Nam"
+
+msgid "VN Ward"
+msgstr "Phường / Xã Việt Nam"
+
+msgid "Validate Dataset"
+msgstr "Kiểm tra toàn vẹn dữ liệu"
+
+msgid "Validation failed"
+msgstr "Kiểm tra không đạt"
+
+msgid "Verification failed. Existing data was preserved."
+msgstr "Xác minh thất bại. Dữ liệu hiện có được giữ nguyên."
+
+msgid "Version"
+msgstr "Phiên bản"
+
+msgid "Version/checksum conflict. Current data was preserved."
+msgstr "Phiên bản và mã kiểm tra không khớp. Dữ liệu hiện tại được giữ nguyên."
+
+msgid "Vietnam Two-Level Administration"
+msgstr "Địa chỉ hành chính Việt Nam hai cấp"
+
+msgid "Vietnam address infrastructure"
+msgstr "Quản lý địa chỉ Việt Nam"
+
+msgid "WP-Cron"
+msgstr "Lịch chạy WordPress (WP-Cron)"
+
+msgid "Ward Count"
+msgstr "Số phường / xã / đặc khu"
+
+msgid "Wards added"
+msgstr "Phường/xã được thêm"
+
+msgid "Wards removed"
+msgstr "Phường/xã bị bỏ"
+
+msgid "Wards renamed"
+msgstr "Phường/xã đổi tên"
+
+msgid "Wards with changed parent province"
+msgstr "Phường/xã thay đổi tỉnh quản lý"
+
+msgid "Warnings / Changes"
+msgstr "Cảnh báo / Thay đổi"
+
+msgid "Weekly"
+msgstr "Hằng tuần"
+
+msgid "Where do you want to use address fields?"
+msgstr "Bạn muốn dùng địa chỉ ở đâu?"
+
+msgid "Woo Integration"
+msgstr "Tích hợp WooCommerce"
+
+msgid "Woo My Account integration"
+msgstr "Địa chỉ trong Tài khoản WooCommerce"
+
+msgid "Woo Order Admin integration"
+msgstr "Địa chỉ trong quản trị đơn hàng"
+
+msgid "WooCommerce Version"
+msgstr "Phiên bản WooCommerce"
+
+msgid "WordPress Version"
+msgstr "Phiên bản WordPress"
+
+msgid "Yes"
+msgstr "Có"
+
+msgid "You are not allowed to perform this dataset action."
+msgstr "Bạn không có quyền thực hiện thao tác dữ liệu này."
+
+msgid "Your address data is ready"
+msgstr "Dữ liệu địa chỉ sẵn sàng sử dụng"
+
+msgid "Your address data needs attention"
+msgstr "Dữ liệu địa chỉ cần được kiểm tra"
+
+msgid "through"
+msgstr "đến ngày"

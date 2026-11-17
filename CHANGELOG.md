@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.0.4 — 2026-11-17
+
+- Simplify administration into Overview, Setup and Advanced; keep technical data and maintenance controls collapsed and preserve old links and protected preview/apply workflows.
+- Add optional WooCommerce, Contact Form 7, Fluent Forms and WPForms integration controls, enabled by default; disabling integrations preserves saved addresses.
+- Add plain Vietnamese guidance and a visible scan → review → confirm sequence for advanced address tools.
+
+## 2.0.3 — 2026-11-17
+
+- Redesign the plugin settings with a responsive header, dataset overview, tab navigation and consistent controls; load admin CSS only on the plugin settings page.
+- Add the Vietnamese translation catalog for admin labels, actions, help text and notices, with a reproducible catalog builder and placeholder checks.
+- Show readable localized status labels without changing stored codes, REST responses, dataset versions or historical addresses.
+
 ## 2.0.2 — 2026-11-05
 
 - Add an optional native combined Vietnam address field for WPForms Lite 2.0.3.1+, with independent groups, server relationship validation, readable notifications and canonical code properties. Pro is explicitly gated until certified.

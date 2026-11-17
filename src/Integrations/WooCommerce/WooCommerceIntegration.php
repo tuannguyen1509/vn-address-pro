@@ -5,7 +5,7 @@ defined( 'ABSPATH' ) || exit;
 final class WooCommerceIntegration {
     private static bool $loaded = false;
     public static function load(): void {
-        if ( self::$loaded || ! Compatibility::supported() ) { return; }
+        if ( self::$loaded || ! \Tunlamweb\VNAddressPro\Support\IntegrationSettings::enabled( 'woocommerce' ) || ! Compatibility::supported() ) { return; }
         self::$loaded = true;
         ( new States() )->register();
         ( new AddressFields() )->register();

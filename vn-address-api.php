@@ -2,7 +2,7 @@
 /**
  * Plugin Name: VN Address Pro
  * Description: Vietnamese province and ward address infrastructure for WordPress.
- * Version: 2.0.2
+ * Version: 2.0.4
  * Author: Tunlamweb
  * Author URI: https://tunlamweb.com
  * Text Domain: vn-address-pro

@@ -9,10 +9,14 @@ defined( 'ABSPATH' ) || exit;
 final class SettingsPage {
     public function register(): void {
         add_action( 'admin_menu', array( $this, 'menu' ) );
+        add_action( 'admin_enqueue_scripts', array( $this, 'assets' ) );
         add_action( 'admin_post_vnap_dataset_action', array( $this, 'handle' ) );
         add_action( 'admin_notices', array( $this, 'notice' ) );
         add_action( 'load-settings_page_vn-address-pro', array( new MigrationPage(), 'preflight' ) );
         add_action( 'load-settings_page_vn-address-pro', array( new ShippingConfigurationPage(), 'preflight' ) );
+    }
+    public function assets( string $hook ): void {
+        if ( $hook === 'settings_page_vn-address-pro' ) { wp_enqueue_style( 'vnap-admin', VNAP_URL . 'assets/css/admin.css', array(), VNAP_VERSION ); }
     }
     public function menu(): void { add_options_page( __( 'VN Address', 'vn-address-pro' ), __( 'VN Address', 'vn-address-pro' ), 'manage_options', 'vn-address-pro', array( $this, 'render' ) ); }
     public function authorize( string $command, string $nonce ): bool {
@@ -21,11 +25,15 @@ final class SettingsPage {
     public function handle(): void {
         $command = isset( $_POST['vnap_command'] ) && is_string( $_POST['vnap_command'] ) ? sanitize_key( wp_unslash( $_POST['vnap_command'] ) ) : '';
         $nonce = isset( $_POST['_wpnonce'] ) && is_string( $_POST['_wpnonce'] ) ? wp_unslash( $_POST['_wpnonce'] ) : '';
-        if ( ! $this->authorize( $command, $nonce ) || ! in_array( $command, array( 'schedule','check','sync','validate','repair','reinstall','clear' ), true ) ) {
+        if ( ! $this->authorize( $command, $nonce ) || ! in_array( $command, array( 'integrations','schedule','check','sync','validate','repair','reinstall','clear' ), true ) ) {
             wp_die( esc_html__( 'You are not allowed to perform this dataset action.', 'vn-address-pro' ), '', array( 'response' => 403 ) );
         }
         $service = new DatasetSyncService();
         switch ( $command ) {
+            case 'integrations':
+                $selected = isset( $_POST['vnap_enabled'] ) && is_array( $_POST['vnap_enabled'] ) ? wp_unslash( $_POST['vnap_enabled'] ) : array();
+                \Tunlamweb\VNAddressPro\Support\IntegrationSettings::save( $selected );
+                $message = __( 'Integration settings saved.', 'vn-address-pro' ); break;
             case 'schedule':
                 $value = isset( $_POST['vnap_schedule'] ) && is_string( $_POST['vnap_schedule'] ) ? wp_unslash( $_POST['vnap_schedule'] ) : 'disabled';
                 update_option( DatasetMetadata::SCHEDULE, DatasetScheduler::sanitize( $value ), false );
@@ -44,7 +52,7 @@ final class SettingsPage {
                 $message = __( 'Remote active, negative and failure caches cleared for installed province codes. Last-known-good data was retained.', 'vn-address-pro' );
         }
         set_transient( 'vnap_admin_result_' . get_current_user_id(), $message, 5 * MINUTE_IN_SECONDS );
-        wp_safe_redirect( admin_url( 'options-general.php?page=vn-address-pro&tab=' . ( $command === 'schedule' ? 'general' : ( in_array( $command, array( 'sync','check' ), true ) ? 'data' : 'tools' ) ) ) );
+        wp_safe_redirect( admin_url( 'options-general.php?page=vn-address-pro&tab=' . ( in_array( $command, array( 'schedule','integrations' ), true ) ? 'settings' : ( $command === 'validate' ? 'general' : ( in_array( $command, array( 'sync','check' ), true ) ? 'data' : 'advanced' ) ) ) ) );
         exit;
     }
     public function notice(): void {
@@ -56,12 +64,12 @@ final class SettingsPage {
     }
     private function rows( array $rows ): void {
         echo '<table class="widefat striped vnap-status"><tbody>';
-        foreach ( $rows as $label => $value ) { echo '<tr><th scope="row">' . esc_html( $label ) . '</th><td>' . esc_html( is_scalar( $value ) ? (string) $value : __( 'Invalid metadata', 'vn-address-pro' ) ) . '</td></tr>'; }
+        foreach ( $rows as $label => $value ) { echo '<tr><th scope="row">' . esc_html( $label ) . '</th><td>' . esc_html( is_scalar( $value ) ? Presentation::value( (string) $value ) : __( 'Invalid metadata', 'vn-address-pro' ) ) . '</td></tr>'; }
         echo '</tbody></table>';
     }
     private function date( $timestamp ): string { return is_int( $timestamp ) && $timestamp > 0 ? wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $timestamp ) : __( 'Not recorded', 'vn-address-pro' ); }
     private function form( string $command, string $label, bool $downgrade = false ): void {
-        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="vnap-action">';
+        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="vnap-action vnap-action--' . esc_attr( $command ) . '">';
         echo '<input type="hidden" name="action" value="vnap_dataset_action"><input type="hidden" name="vnap_command" value="' . esc_attr( $command ) . '">';
         wp_nonce_field( 'vnap_' . $command );
         if ( $downgrade ) { echo '<p><label><input type="checkbox" name="vnap_confirm_downgrade" value="1"> ' . esc_html__( 'I understand that reinstalling the bundle will downgrade this newer dataset.', 'vn-address-pro' ) . '</label></p>'; }
@@ -75,15 +83,21 @@ final class SettingsPage {
             $tabs['migration'] = __( 'Migration', 'vn-address-pro' );
             $tabs['shipping'] = __( 'Shipping Configuration', 'vn-address-pro' );
         }
+        $tabs['settings'] = __( 'Setup', 'vn-address-pro' ); $tabs['advanced'] = __( 'Advanced', 'vn-address-pro' );
         $tab = isset( $_GET['tab'] ) && is_string( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'general';
         if ( $tab === 'migration' && ! \Tunlamweb\VNAddressPro\Migration\MigrationService::allowed() ) { wp_die( esc_html__( 'Migration requires site and WooCommerce management permissions.', 'vn-address-pro' ), '', array( 'response' => 403 ) ); }
         if ( ! isset( $tabs[ $tab ] ) ) { $tab = 'general'; }
         $meta = new DatasetMetadata(); $m = $meta->read(); $s = $meta->state(); $last = $s['last_attempt'] ?? array();
-        echo '<div class="wrap vnap-admin"><h1>' . esc_html__( 'VN Address', 'vn-address-pro' ) . '</h1><nav class="nav-tab-wrapper" aria-label="' . esc_attr__( 'VN Address settings', 'vn-address-pro' ) . '">';
-        foreach ( $tabs as $key => $label ) { echo '<a class="nav-tab' . ( $tab === $key ? ' nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'options-general.php?page=vn-address-pro&tab=' . $key ) ) . '"' . ( $tab === $key ? ' aria-current="page"' : '' ) . '>' . esc_html( $label ) . '</a>'; }
-        echo '</nav><h2>' . esc_html( $tabs[ $tab ] ) . '</h2>';
-        if ( $tab === 'migration' ) { ( new MigrationPage() )->render(); echo '</div>'; return; }
-        if ( $tab === 'shipping' ) { ( new ShippingConfigurationPage() )->render(); echo '</div>'; return; }
+        echo '<div class="wrap vnap-admin"><h1 class="screen-reader-text">VN Address Pro</h1><header class="vnap-header"><span class="vnap-brand" aria-hidden="true">VN</span><div><p class="vnap-eyebrow">' . esc_html__( 'Vietnam address infrastructure', 'vn-address-pro' ) . '</p><h2 class="vnap-title">VN Address Pro</h2><p class="vnap-intro">' . esc_html__( 'Manage province and ward data, form integrations and shipping configuration in one place.', 'vn-address-pro' ) . '</p></div><span class="vnap-version">v' . esc_html( VNAP_VERSION ) . '</span></header>';
+        echo '<dl class="vnap-overview"><div><dt>' . esc_html__( 'Province Count', 'vn-address-pro' ) . '</dt><dd>' . esc_html( ( is_scalar( $m['province_count'] ?? null ) ? (string) $m['province_count'] : '—' ) ) . '</dd></div><div><dt>' . esc_html__( 'Ward Count', 'vn-address-pro' ) . '</dt><dd>' . esc_html( ( is_scalar( $m['ward_count'] ?? null ) ? (string) $m['ward_count'] : '—' ) ) . '</dd></div><div><dt>' . esc_html__( 'Address Model', 'vn-address-pro' ) . '</dt><dd>' . esc_html__( 'Two levels', 'vn-address-pro' ) . '</dd></div></dl>';
+        echo '<nav class="nav-tab-wrapper" aria-label="' . esc_attr__( 'VN Address settings', 'vn-address-pro' ) . '">';
+        $main_tabs = array( 'general' => __( 'General', 'vn-address-pro' ), 'settings' => __( 'Setup', 'vn-address-pro' ), 'advanced' => __( 'Advanced', 'vn-address-pro' ) );
+        $active_tab = in_array( $tab, array( 'general','settings' ), true ) ? $tab : 'advanced';
+        foreach ( $main_tabs as $key => $label ) { echo '<a class="nav-tab' . ( $active_tab === $key ? ' nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'options-general.php?page=vn-address-pro&tab=' . $key ) ) . '"' . ( $active_tab === $key ? ' aria-current="page"' : '' ) . '>' . esc_html( $label ) . '</a>'; }
+        echo '</nav><section class="vnap-panel" aria-labelledby="vnap-panel-title"><h2 id="vnap-panel-title">' . esc_html( $tabs[ $tab ] ) . '</h2>';
+        if ( $active_tab === 'advanced' ) { $this->advanced_navigation( $tab ); }
+        if ( $tab === 'migration' ) { ( new MigrationPage() )->render(); echo '</section></div>'; return; }
+        if ( $tab === 'shipping' ) { ( new ShippingConfigurationPage() )->render(); echo '</section></div>'; return; }
         $result = get_transient( 'vnap_admin_result_' . get_current_user_id() );
         if ( is_string( $result ) ) { echo '<div class="notice notice-info"><p>' . esc_html( $result ) . '</p></div>'; delete_transient( 'vnap_admin_result_' . get_current_user_id() ); }
         $base = array(
@@ -93,7 +107,16 @@ final class SettingsPage {
             __( 'Database Schema Version', 'vn-address-pro' ) => get_option( 'vnap_db_version', '' ),
         );
         if ( $tab === 'general' ) {
-            $this->rows( $base );
+            $usable = ( new LocalAddressRepository() )->has_usable_dataset();
+            $audit = get_option( DatasetMetadata::AUDIT, array() );
+            $healthy = $usable && ! ( is_array( $audit ) && isset( $audit['healthy'] ) && ! $audit['healthy'] );
+            echo '<div class="vnap-health"><h3>' . esc_html( $healthy ? __( 'Your address data is ready', 'vn-address-pro' ) : __( 'Your address data needs attention', 'vn-address-pro' ) ) . '</h3><p>' . esc_html__( 'Customers choose a province, then a ward. No district is needed. Existing customer and order addresses stay as they are.', 'vn-address-pro' ) . '</p></div>';
+            $this->form( 'validate', __( 'Check address data', 'vn-address-pro' ) );
+            echo '<p>' . esc_html__( 'This check does not change your address data.', 'vn-address-pro' ) . '</p>';
+            echo '<p><a class="button" href="' . esc_url( admin_url( 'options-general.php?page=vn-address-pro&tab=settings' ) ) . '">' . esc_html__( 'Review setup', 'vn-address-pro' ) . '</a></p>';
+        } elseif ( $tab === 'settings' ) {
+            $this->integration_form();
+            echo '<h3>' . esc_html__( 'Keep address data up to date', 'vn-address-pro' ) . '</h3><p>' . esc_html__( 'Choose how often to check and update province and ward data. This does not update old customer or order addresses.', 'vn-address-pro' ) . '</p>';
             echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="vnap_dataset_action"><input type="hidden" name="vnap_command" value="schedule">';
             wp_nonce_field( 'vnap_schedule' );
             echo '<p><label for="vnap-schedule">' . esc_html__( 'Automatic Dataset Updates', 'vn-address-pro' ) . '</label> <select id="vnap-schedule" name="vnap_schedule">';
@@ -102,6 +125,7 @@ final class SettingsPage {
             }
             echo '</select></p>'; submit_button( __( 'Save Changes', 'vn-address-pro' ) ); echo '</form>';
         } elseif ( $tab === 'data' || $tab === 'status' ) {
+            echo '<details class="vnap-disclosure"><summary>' . esc_html__( 'Technical details', 'vn-address-pro' ) . '</summary>';
             $audit = get_option( DatasetMetadata::AUDIT, array() );
             $badge = __( 'Healthy', 'vn-address-pro' );
             if ( ! ( new LocalAddressRepository() )->has_usable_dataset() ) { $badge = __( 'Dataset Missing', 'vn-address-pro' ); }
@@ -136,11 +160,13 @@ final class SettingsPage {
                 global $wp_version, $wpdb;
                 $rows += \Tunlamweb\VNAddressPro\Integrations\WooCommerce\Compatibility::status();
                 foreach ( \Tunlamweb\VNAddressPro\Plugin::instance()->forms()->status() as $adapter => $status ) {
-                    $rows[ __( 'Form integration:', 'vn-address-pro' ) . ' ' . $adapter ] = $status['booted'] ? __( 'Active', 'vn-address-pro' ) : __( 'Absent or unsupported', 'vn-address-pro' );
+                    $adapter_name = array( 'contact-form-7' => 'Contact Form 7', 'fluent-forms' => 'Fluent Forms', 'wpforms' => 'WPForms Lite' )[ $adapter ] ?? $adapter;
+                    $rows[ __( 'Form integration:', 'vn-address-pro' ) . ' ' . $adapter_name ] = $status['booted'] ? __( 'Active', 'vn-address-pro' ) : __( 'Absent or unsupported', 'vn-address-pro' );
                     if ( array_key_exists( 'detected', $status ) ) {
-                        $rows[ __( 'Form integration:', 'vn-address-pro' ) . ' ' . $adapter ] = $status['booted'] ? __( 'Active', 'vn-address-pro' ) : ( $status['detected'] ? __( 'Unsupported', 'vn-address-pro' ) : __( 'Not installed', 'vn-address-pro' ) );
-                        $rows[ $adapter . ' ' . __( 'Version', 'vn-address-pro' ) ] = ( $status['version'] ?? '' ) ?: '—';
+                        $rows[ __( 'Form integration:', 'vn-address-pro' ) . ' ' . $adapter_name ] = $status['booted'] ? __( 'Active', 'vn-address-pro' ) : ( $status['detected'] ? __( 'Unsupported', 'vn-address-pro' ) : __( 'Not installed', 'vn-address-pro' ) );
+                        $rows[ $adapter_name . ' ' . __( 'Version', 'vn-address-pro' ) ] = ( $status['version'] ?? '' ) ?: '—';
                     }
+                    if ( ! \Tunlamweb\VNAddressPro\Support\IntegrationSettings::enabled( $adapter ) ) { $rows[ __( 'Form integration:', 'vn-address-pro' ) . ' ' . $adapter_name ] = __( 'Disabled', 'vn-address-pro' ); }
                 }
                 $rows[ __( 'Migration module', 'vn-address-pro' ) ] = \Tunlamweb\VNAddressPro\Integrations\WooCommerce\Compatibility::supported() ? __( 'Available — explicit preview/apply only', 'vn-address-pro' ) : __( 'Requires supported WooCommerce', 'vn-address-pro' );
                 $rows += array(
@@ -157,9 +183,10 @@ final class SettingsPage {
                     $rows[ $table ] = strtoupper( (string) $engine ) === 'INNODB' ? __( 'InnoDB — OK', 'vn-address-pro' ) : __( 'Needs Repair: transactional InnoDB required', 'vn-address-pro' );
                 }
             }
-            $this->rows( $rows );
+            $this->rows( $rows ); echo '</details>';
             if ( $tab === 'data' ) { $this->form( 'check', __( 'Check for Updates', 'vn-address-pro' ) ); $this->form( 'sync', __( 'Sync Now', 'vn-address-pro' ) ); }
         } else {
+            echo '<p>' . esc_html__( 'Use these tools only when troubleshooting. For everyday use, the Overview and Setup pages are enough.', 'vn-address-pro' ) . '</p><details class="vnap-disclosure"><summary>' . esc_html__( 'Repair and maintenance', 'vn-address-pro' ) . '</summary>';
             echo '<p>' . esc_html__( 'Repair validates current data first, then uses a valid remote candidate or the bundle. Ordinary repair never downgrades. Reinstall uses only the bundled snapshot.', 'vn-address-pro' ) . '</p>';
             $this->form( 'validate', __( 'Validate Dataset', 'vn-address-pro' ) );
             $this->form( 'repair', __( 'Repair Dataset', 'vn-address-pro' ) );
@@ -167,7 +194,34 @@ final class SettingsPage {
             $this->form( 'clear', __( 'Clear Remote Cache (retain LKG)', 'vn-address-pro' ) );
             $audit = get_option( DatasetMetadata::AUDIT, array() );
             if ( is_array( $audit ) && $audit ) { $this->rows( array( __( 'Last Validation', 'vn-address-pro' ) => $this->date( $audit['at'] ?? null ), __( 'Integrity Issues', 'vn-address-pro' ) => implode( ', ', $audit['issues'] ?? array() ) ) ); }
+            echo '</details>';
         }
-        echo '</div>';
+        echo '</section></div>';
     }
+    private function advanced_navigation( string $tab ): void {
+        echo '<p><a href="' . esc_url( admin_url( 'options-general.php?page=vn-address-pro&tab=advanced' ) ) . '">' . esc_html__( 'Advanced tools', 'vn-address-pro' ) . '</a></p><div class="vnap-tool-links">';
+        $links = array( 'data' => __( 'Update address data', 'vn-address-pro' ), 'status' => __( 'System Status', 'vn-address-pro' ) );
+        if ( \Tunlamweb\VNAddressPro\Migration\MigrationService::allowed() ) {
+            $links['migration'] = __( 'Review old addresses', 'vn-address-pro' );
+            $links['shipping'] = __( 'Review shipping setup', 'vn-address-pro' );
+        }
+        foreach ( $links as $key => $label ) { echo '<a class="button" href="' . esc_url( admin_url( 'options-general.php?page=vn-address-pro&tab=' . $key ) ) . '"' . ( $tab === $key ? ' aria-current="page"' : '' ) . '>' . esc_html( $label ) . '</a>'; }
+        echo '</div>';
+        if ( in_array( $tab, array( 'migration','shipping' ), true ) ) { echo '<p class="vnap-steps">' . esc_html__( '1. Scan → 2. Review → 3. Confirm selected changes', 'vn-address-pro' ) . '</p>'; }
+    }
+    private function integration_form(): void {
+        $forms = \Tunlamweb\VNAddressPro\Plugin::instance()->forms()->status();
+        $labels = array( 'woocommerce' => 'WooCommerce', 'contact-form-7' => 'Contact Form 7', 'fluent-forms' => 'Fluent Forms', 'wpforms' => 'WPForms Lite' );
+        echo '<h3>' . esc_html__( 'Where do you want to use address fields?', 'vn-address-pro' ) . '</h3><p>' . esc_html__( 'Enable an integration to use province and ward fields there. A compatible plugin must also be installed and active.', 'vn-address-pro' ) . '</p><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="vnap_dataset_action"><input type="hidden" name="vnap_command" value="integrations">';
+        wp_nonce_field( 'vnap_integrations' );
+        foreach ( $labels as $id => $label ) {
+            $enabled = \Tunlamweb\VNAddressPro\Support\IntegrationSettings::enabled( $id );
+            $available = $id === 'woocommerce' ? \Tunlamweb\VNAddressPro\Integrations\WooCommerce\Compatibility::supported() : ( $forms[ $id ]['available'] ?? false );
+            $status = ! $enabled ? __( 'Disabled', 'vn-address-pro' ) : ( $available ? __( 'Active', 'vn-address-pro' ) : __( 'Install or activate a compatible plugin to use this integration.', 'vn-address-pro' ) );
+            echo '<div class="vnap-integration"><label><input type="checkbox" name="vnap_enabled[]" value="' . esc_attr( $id ) . '" ' . checked( $enabled, true, false ) . '> <strong>' . esc_html( $label ) . '</strong></label><p>' . esc_html( $status ) . '</p></div>';
+        }
+        echo '<p>' . esc_html__( 'Turning an integration off stops the new address fields there. Saved addresses are kept.', 'vn-address-pro' ) . '</p>';
+        submit_button( __( 'Save integration settings', 'vn-address-pro' ) ); echo '</form>';
+    }
+
 }

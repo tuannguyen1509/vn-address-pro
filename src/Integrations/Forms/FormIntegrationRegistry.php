@@ -14,7 +14,7 @@ final class FormIntegrationRegistry {
     }
     public function boot_available(): void {
         foreach ( $this->adapters as $id => $adapter ) {
-            if ( ! isset( $this->booted[$id] ) && $adapter->is_available() ) { $adapter->boot(); $this->booted[$id] = true; }
+            if ( ! isset( $this->booted[$id] ) && \Tunlamweb\VNAddressPro\Support\IntegrationSettings::enabled( $id ) && $adapter->is_available() ) { $adapter->boot(); $this->booted[$id] = true; }
         }
     }
     public function status(): array {
