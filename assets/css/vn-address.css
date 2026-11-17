@@ -1,18 +1,23 @@
-.vnap-address { display: grid; gap: var(--vnap-gap, 1rem); min-width: 0; }
-.vnap-address .vnap-field { display: grid; gap: .35em; min-width: 0; }
-.vnap-address .vnap-select,
-.vnap-address .vnap-input { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; font: inherit; }
-.vnap-address .vnap-status,
-.vnap-address .vnap-error { margin: 0; }
-.vnap-address .vnap-status:empty,
-.vnap-address .vnap-error:empty { display: none; }
-.vnap-address .vnap-retry { justify-self: start; font: inherit; }
-.vnap-address [hidden] { display: none; }
-.vnap-address [aria-invalid="true"] { outline: 2px solid currentColor; outline-offset: 2px; }
-.vnap-address .vnap-select,
-.vnap-address .vnap-input,
-.vnap-address .vnap-retry { min-height: 44px; }
-@media (max-width: 640px) {
-    .vnap-address .vnap-select,
-    .vnap-address .vnap-input { font-size: 16px; }
+/* Layout defaults only. :where() keeps specificity at zero so theme/custom CSS wins. */
+:where(.vnap-address) { display: grid; gap: var(--vnap-gap, 1rem); min-width: 0; }
+:where(.vnap-address .vnap-field) { display: grid; align-content: start; gap: var(--vnap-field-gap, .35em); min-width: 0; }
+:where(.vnap-address .vnap-select, .vnap-address .vnap-input, .vnap-cf7-field, [data-vnap-fluent-kind]) { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; }
+:where(.vnap-address .vnap-field > label) { margin: 0; }
+:where(.vnap-address .vnap-status, .vnap-address .vnap-error) { margin: 0; grid-column: 1 / -1; }
+:where(.vnap-address .vnap-retry) { justify-self: start; grid-column: 1 / -1; }
+:where(.vnap-cf7-wrap) { display: block; min-width: 0; }
+:where(.vnap-cf7-wrap [data-vnap-status], .vnap-cf7-wrap [data-vnap-error], .fluentform [data-vnap-status], .fluentform [data-vnap-error]) { display: block; overflow-wrap: anywhere; }
+:where(.wpforms-field-vnap-address) { container-type: inline-size; }
+:where(.wpforms-field-vnap-address .vnap-address) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+:where(.vnap-address > noscript) { grid-column: 1 / -1; }
+:where(.vnap-address > noscript:empty) { display: none; }
+@container (max-width: 30rem) {
+    :where(.wpforms-field-vnap-address .vnap-address) { grid-template-columns: minmax(0, 1fr); }
 }
+@media (max-width: 640px) {
+    :where(.wpforms-field-vnap-address .vnap-address) { grid-template-columns: minmax(0, 1fr); }
+}
+/* Preserve semantic hidden/error states; visual layout rules above stay easy to override. */
+.vnap-address [hidden], .vnap-cf7-wrap [hidden], .fluentform [data-vnap-retry][hidden] { display: none; }
+:where(.vnap-address .vnap-status:empty, .vnap-address .vnap-error:empty, .vnap-cf7-wrap [data-vnap-status]:empty, .vnap-cf7-wrap [data-vnap-error]:empty, .fluentform [data-vnap-status]:empty, .fluentform [data-vnap-error]:empty) { display: none; }
+:where(.vnap-address [aria-invalid="true"]) { outline: 2px solid currentColor; outline-offset: 2px; }

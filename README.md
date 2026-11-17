@@ -4,7 +4,7 @@ Hướng dẫn cho người dùng: [Bắt đầu với 3 mục đơn giản](doc
 
 ## Overview
 
-Current build: **2.0.4** (2026-11-17). Simplifies settings into Overview, Setup and Advanced, with optional integration controls. See [CHANGELOG](CHANGELOG.md). Dataset and REST contract versions remain independent of the plugin version.
+Current build: **2.0.7** (2026-11-17). Adds [compact checkout, optional VAT requests and opt-in frontend CSS](docs/compact-checkout-vat.md). See [CHANGELOG](CHANGELOG.md). Dataset and REST contract versions remain independent of the plugin version.
 
 WordPress REST API cho địa chỉ Việt Nam hai cấp: Tỉnh/Thành phố → Phường/Xã/Đặc khu. Tác giả: **Tunlamweb** — [Author URI](https://tunlamweb.com). Plugin độc lập theme, không yêu cầu WooCommerce hoặc form plugin.
 
@@ -49,7 +49,7 @@ Không cần Composer hoặc bước cài dependency. Autoloader nội bộ ch�
 
 ## Development Status
 
-**Đã tiếp tục phát triển sau Phase 12; bản hiện tại 2.0.4.** Đọc [checklist công việc và ghi chú bàn giao](docs/development-checklist.md) để biết phần đã có và backlog. Các ghi chú tạm ngưng/2.0.0 trong báo cáo phase là trạng thái lịch sử.
+**Đã tiếp tục phát triển sau Phase 12; bản hiện tại 2.0.7.** Đọc [checklist công việc và ghi chú bàn giao](docs/development-checklist.md) để biết phần đã có và backlog. Các ghi chú tạm ngưng/2.0.0 trong báo cáo phase là trạng thái lịch sử.
 
 Phase 12 — Fluent Forms Address Adapter, tiếp tục development của version 2.0.0. Class legacy `VN_Address_API_2025`, constants và toàn bộ public methods vẫn tồn tại dưới dạng facade trong `includes/legacy-api.php`; mọi xử lý delegate sang core mới.
 

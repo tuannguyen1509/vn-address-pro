@@ -35,7 +35,8 @@ final class BlocksIntegration implements IntegrationInterface {
     public static function register(): void {
         add_action( 'woocommerce_blocks_enqueue_checkout_block_scripts_before', static function () {
             Compatibility::use_block_context();
-            wp_enqueue_style( 'vnap-address', VNAP_URL . 'assets/css/vn-address.css', array(), VNAP_VERSION );
+            \Tunlamweb\VNAddressPro\Integrations\WooCommerce\Assets::enqueue_layout();
+            if ( \Tunlamweb\VNAddressPro\Support\CheckoutPreferences::get( 'css' ) ) { wp_enqueue_style( 'vnap-address', VNAP_URL . 'assets/css/vn-address.css', array(), VNAP_VERSION ); }
         } );
         add_action( 'init', static function () {
             foreach ( array( 'billing','shipping' ) as $type ) {

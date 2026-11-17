@@ -3,9 +3,14 @@ namespace Tunlamweb\VNAddressPro\Integrations\WooCommerce;
 defined( 'ABSPATH' ) || exit;
 
 final class Assets {
+    public static function enqueue_layout(): void {
+        if ( ! \Tunlamweb\VNAddressPro\Support\CheckoutPreferences::get( 'css' ) ) { return; }
+        wp_enqueue_style( 'vnap-wc-checkout', VNAP_URL . 'assets/css/woocommerce-checkout.css', array(), VNAP_VERSION );
+    }
     public function register(): void { add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ), 20 ); }
     public function enqueue(): void {
         if ( ! Compatibility::request() || ! is_checkout() || is_wc_endpoint_url() ) { return; }
+        self::enqueue_layout();
         \Tunlamweb\VNAddressPro\Frontend\Assets::enqueue();
         $codes = array();
         foreach ( WC()->countries->get_states( 'VN' ) ?: array() as $key => $name ) {

@@ -1,5 +1,5 @@
 msgid ""
-msgstr "Project-Id-Version: VN Address Pro 2.0.4\nLanguage: vi\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
+msgstr "Project-Id-Version: VN Address Pro 2.0.7\nLanguage: vi\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
 
 msgid "%1$s: %2$s"
 msgstr "%1$s: %2$s"

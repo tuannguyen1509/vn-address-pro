@@ -33,6 +33,9 @@ final class SettingsPage {
             case 'integrations':
                 $selected = isset( $_POST['vnap_enabled'] ) && is_array( $_POST['vnap_enabled'] ) ? wp_unslash( $_POST['vnap_enabled'] ) : array();
                 \Tunlamweb\VNAddressPro\Support\IntegrationSettings::save( $selected );
+                if ( isset( $_POST['vnap_checkout_preferences'] ) ) {
+                    \Tunlamweb\VNAddressPro\Support\CheckoutPreferences::save( isset( $_POST['vnap_checkout_options'] ) && is_array( $_POST['vnap_checkout_options'] ) ? wp_unslash( $_POST['vnap_checkout_options'] ) : array() );
+                }
                 $message = __( 'Integration settings saved.', 'vn-address-pro' ); break;
             case 'schedule':
                 $value = isset( $_POST['vnap_schedule'] ) && is_string( $_POST['vnap_schedule'] ) ? wp_unslash( $_POST['vnap_schedule'] ) : 'disabled';
@@ -221,6 +224,11 @@ final class SettingsPage {
             echo '<div class="vnap-integration"><label><input type="checkbox" name="vnap_enabled[]" value="' . esc_attr( $id ) . '" ' . checked( $enabled, true, false ) . '> <strong>' . esc_html( $label ) . '</strong></label><p>' . esc_html( $status ) . '</p></div>';
         }
         echo '<p>' . esc_html__( 'Turning an integration off stops the new address fields there. Saved addresses are kept.', 'vn-address-pro' ) . '</p>';
+        echo '<h3>' . esc_html__( 'Giao diện và thanh toán', 'vn-address-pro' ) . '</h3><input type="hidden" name="vnap_checkout_preferences" value="1">';
+        foreach ( array( 'css' => __( 'Sử dụng CSS của plugin cho checkout và các form', 'vn-address-pro' ), 'compact' => __( 'Thu gọn checkout và gom cụm địa chỉ', 'vn-address-pro' ), 'vat' => __( 'Cho phép khách thêm thông tin VAT', 'vn-address-pro' ) ) as $key => $label ) {
+            echo '<p><label><input type="checkbox" name="vnap_checkout_options[]" value="' . esc_attr( $key ) . '" ' . checked( \Tunlamweb\VNAddressPro\Support\CheckoutPreferences::get( $key ), true, false ) . '> ' . esc_html( $label ) . '</label></p>';
+        }
+        echo '<p>' . esc_html__( 'CSS mặc định tắt. Theme tự code hoặc Flatsome có thể dùng CSS riêng; chức năng chọn địa chỉ và VAT vẫn hoạt động. VAT trên Checkout Block cần WooCommerce 9.9 trở lên.', 'vn-address-pro' ) . '</p>';
         submit_button( __( 'Save integration settings', 'vn-address-pro' ) ); echo '</form>';
     }
 

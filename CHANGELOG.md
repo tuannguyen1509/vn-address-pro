@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.0.7 — 2026-11-17
+
+- Add opt-in frontend CSS, independent compact checkout and optional invoice-request preferences.
+- Group Classic address fields without replacing Woo templates; keep optional address details accessible and preserve international/postcode shipping requirements.
+- Add conditional VAT request fields with server validation and order metadata. Checkout Block uses the native additional-fields API on WooCommerce 9.9+.
+
+## 2.0.6 — 2026-11-17
+
+- Add scoped, responsive checkout layout defaults for WooCommerce Classic and Checkout Block, including consistent ward controls and mobile field wrapping.
+- Keep theme fonts and colors, use zero-specificity CSS and load the stylesheet only in checkout contexts; no customer, order, shipping or payment changes.
+
+## 2.0.5 — 2026-11-17
+
+- Use low-specificity layout defaults for address fields in WPForms, Contact Form 7 and Fluent Forms. WPForms province/ward groups adapt to their available container width.
+- Preserve native form styling; remove forced control font, height and mobile font size so site styles can override the layout without !important.
+
 ## 2.0.4 — 2026-11-17
 
 - Simplify administration into Overview, Setup and Advanced; keep technical data and maintenance controls collapsed and preserve old links and protected preview/apply workflows.

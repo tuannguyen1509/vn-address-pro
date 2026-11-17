@@ -1,0 +1,104 @@
+/* Theme-neutral checkout layout. Zero-specificity defaults, no !important. */
+.woocommerce-checkout form.checkout .vnap-wc-address [hidden] {
+    display: none;
+}
+:where(.woocommerce-checkout form.checkout, .wp-block-woocommerce-checkout) {
+    --vnap-checkout-gap: 1rem;
+    --vnap-checkout-radius: .375rem;
+    min-width: 0;
+    max-width: 100%;
+}
+:where(.woocommerce-checkout .vnap-checkout-address) {
+    box-sizing: border-box;
+    min-width: 0;
+    padding: 1rem;
+    border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+    border-radius: var(--vnap-checkout-radius, .375rem);
+}
+:where(.woocommerce-checkout .vnap-checkout-address > legend) { padding-inline: .35em; font: inherit; font-weight: 600; }
+:where(.woocommerce-checkout .vnap-address-details) { clear: both; width: 100%; margin-block: .75rem; }
+:where(.woocommerce-checkout .vnap-address-details summary) { cursor: pointer; margin-block: .5rem; }
+:where(.woocommerce-checkout .vnap-vat) { clear: both; margin-block: 1.5rem; }
+:where(.woocommerce-checkout .vnap-vat fieldset) { min-width: 0; padding: 1rem; border: 1px solid color-mix(in srgb, currentColor 18%, transparent); border-radius: var(--vnap-checkout-radius, .375rem); }
+.vnap-vat .form-row input.input-checkbox {
+    appearance: auto;
+    display: inline-block;
+    width: 1em;
+    min-width: 1em;
+    height: 1em;
+    min-height: 0;
+    margin-inline-end: .5em;
+    vertical-align: middle;
+}
+:where(.woocommerce-checkout form.checkout .woocommerce-billing-fields__field-wrapper,
+       .woocommerce-checkout form.checkout .woocommerce-shipping-fields__field-wrapper) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--vnap-checkout-gap);
+}
+:where(.woocommerce-checkout form.checkout .woocommerce-billing-fields__field-wrapper > .form-row,
+       .woocommerce-checkout form.checkout .woocommerce-shipping-fields__field-wrapper > .form-row) {
+    flex: 1 1 calc(50% - var(--vnap-checkout-gap));
+    min-width: 0;
+    margin-block: 0;
+}
+:where(.woocommerce-checkout form.checkout .woocommerce-billing-fields__field-wrapper > .form-row-wide,
+       .woocommerce-checkout form.checkout .woocommerce-shipping-fields__field-wrapper > .form-row-wide) {
+    flex-basis: 100%;
+}
+:where(.woocommerce-checkout form.checkout .woocommerce-input-wrapper,
+       .woocommerce-checkout form.checkout .select2-container,
+       .woocommerce-checkout form.checkout .vnap-wc-address) {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+}
+:where(.woocommerce-checkout form.checkout .vnap-wc-address .vnap-select) {
+    width: 100%;
+    box-sizing: border-box;
+    font: inherit;
+    min-height: 2.75em;
+    padding: .6em .75em;
+}
+:where(.woocommerce-checkout form.checkout #vnap_billing_ward_code_field,
+       .woocommerce-checkout form.checkout #vnap_shipping_ward_code_field) {
+    display: none;
+}
+:where(.wp-block-woocommerce-checkout .vnap-block-ward) {
+    gap: .5rem;
+    margin-block: var(--vnap-checkout-gap);
+    width: 100%;
+    min-width: 0;
+}
+:where(.wp-block-woocommerce-checkout .vnap-block-ward .vnap-label) {
+    display: block;
+    margin: 0;
+    font: inherit;
+    line-height: 1.5;
+}
+:where(.wp-block-woocommerce-checkout .vnap-block-ward .vnap-select) {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 3em;
+    padding: .75em 1em;
+    border: 1px solid currentColor;
+    border-color: color-mix(in srgb, currentColor 30%, transparent);
+    border-radius: var(--vnap-checkout-radius);
+    font: inherit;
+    color: inherit;
+    background-color: inherit;
+}
+:where(.woocommerce-checkout form.checkout .vnap-status,
+       .woocommerce-checkout form.checkout .vnap-error,
+       .wp-block-woocommerce-checkout .vnap-block-ward .vnap-status) {
+    overflow-wrap: anywhere;
+}
+@media (max-width: 640px) {
+    :where(.woocommerce-checkout form.checkout .woocommerce-billing-fields__field-wrapper > .form-row,
+           .woocommerce-checkout form.checkout .woocommerce-shipping-fields__field-wrapper > .form-row) {
+        flex-basis: 100%;
+    }
+}

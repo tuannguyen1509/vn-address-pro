@@ -40,6 +40,7 @@
             }
             const root = document.createElement('div'); root.className = 'vnap-address vnap-wc-address'; root.setAttribute('data-vnap-address', '');
             const bridge = document.createElement('select'); bridge.setAttribute('data-vnap-province', ''); bridge.hidden = true;
+            bridge.style.display = 'none'; // Internal transport, never a visible field even with plugin CSS disabled.
             bridge.add(new Option('', ''));
             for (const option of state.options) {
                 const value = config.stateCodes[option.value]; if (value) bridge.add(new Option(option.textContent, String(value)));

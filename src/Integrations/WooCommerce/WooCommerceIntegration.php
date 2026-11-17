@@ -13,6 +13,8 @@ final class WooCommerceIntegration {
         ( new CustomerAddress() )->register();
         ( new OrderAddress() )->register();
         ( new Assets() )->register();
+        ( new CompactCheckout() )->register();
+        ( new VatFields() )->register();
         ( new MyAccount\MyAccountIntegration() )->register();
         ( new Admin\OrderAddress() )->register();
         if ( Compatibility::supports_blocks() ) { Blocks\BlocksIntegration::register(); }

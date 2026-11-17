@@ -10,6 +10,7 @@ $assert = static function ( $condition, $message ) use ( &$count ) { if ( ! $con
 $block = static function () use ( &$http ) { ++$http; return new WP_Error( 'offline' ); };
 add_filter( 'pre_http_request', $block, PHP_INT_MAX );
 set_error_handler( static function ( $severity, $message, $file, $line ) { if ( error_reporting() & $severity ) { throw new ErrorException( $message, 0, $severity, $file, $line ); } return false; } );
+$css_opt_in = static fn() => true; add_filter( 'vnap_checkout_css', $css_opt_in );
 try {
     $assert( ! wp_script_is( Assets::HANDLE, 'enqueued' ) && ! wp_style_is( Assets::HANDLE, 'enqueued' ), 'Assets not enqueued before rendering' );
     $html = do_shortcode( '[vn_address_fields]' );
@@ -56,4 +57,4 @@ try {
     Assets::enqueue();
     $assert( ! wp_script_is( Assets::HANDLE, 'enqueued' ) && ! wp_style_is( Assets::HANDLE, 'enqueued' ), 'Frontend assets are not enqueued in wp-admin' );
     WP_CLI::success( $count . ' frontend PHP checks passed.' );
-} finally { restore_error_handler(); remove_filter( 'pre_http_request', $block, PHP_INT_MAX ); }
+} finally { remove_filter( 'vnap_checkout_css', $css_opt_in ); restore_error_handler(); remove_filter( 'pre_http_request', $block, PHP_INT_MAX ); }

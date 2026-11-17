@@ -27,6 +27,6 @@ final class Assets {
         if ( is_admin() ) { return; }
         self::register();
         wp_enqueue_script( self::HANDLE );
-        wp_enqueue_style( self::HANDLE, VNAP_URL . 'assets/css/vn-address.css', array(), VNAP_VERSION );
+        if ( \Tunlamweb\VNAddressPro\Support\CheckoutPreferences::get( 'css' ) ) { wp_enqueue_style( self::HANDLE, VNAP_URL . 'assets/css/vn-address.css', array(), VNAP_VERSION ); }
     }
 }
